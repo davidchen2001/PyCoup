@@ -2,7 +2,7 @@ from pydoc import describe
 from turtle import pos
 import discord
 import json
-from gamerunner import CoupGame
+from CoupGame import CoupGame
 import asyncio
 import math
 
@@ -10,7 +10,7 @@ auth = json.load(open('auth.json'))
 token = auth['discord-token']['token']
 
 NUMREACTS = ['0️⃣','1️⃣','2️⃣','3️⃣', '4', '5️⃣','6️⃣','7️⃣']
-ALLACTIONS = ['0: Tax', '1: Assassinate', '2: Exchange', '3: Steal', '4: blank', '5: Income', '6: Foreign Aid', '7: Coup']
+ALLACTIONS = ['1: Assassinate', '2: Exchange', '3: Steal', '4: Tax', '5: Income', '6: Foreign Aid', '7: Coup']
 CHICKENCOLOR = 0xF4E8A4
 GAMECARDS = ["Duke", "Assassin", "Ambassador", "Captain", "Contessa"]
 cardnums = ['🅰', '🅱']

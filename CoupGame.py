@@ -25,9 +25,22 @@ class CoupGame:
         self.cardsRemoved = [0,0,0,0,0]
         self.deck = CoupDeck()
 
-    def addPlayer(self, name):
+    def addPlayer(self, player):
+        if(self.playerCount >= 6):
+            return
+
+        if isinstance(player, str):
+            # if we need to create a player with the supplied name
+            self.alive.append(CoupPlayer(player))
+
+        elif isinstance(player, CoupPlayer):
+            # if the player is already created and we just need to add it
+            self.alive.append(player)
+
+        else:
+            return
+        
         self.playerCount += 1
-        self.alive.append(CoupPlayer(name))
 
     def deal(self):
         for i in range(self.playerCount):
@@ -196,14 +209,14 @@ class CoupGame:
         return True
 
     # getChosenAct requires player input
-    def getChosenAct(actions, player):
+    def getChosenAct(actions, player) -> int:
         # Ask player which action they want to take
         # Return an integer corresponding to the action
         return player.getAction()
 
 
     # returns a player object
-    def getTarget(self, action):
+    def getTarget(self, action) -> CoupPlayer:
         if action == ACTION_ASS or action == ACTION_COU:
             return self.askForTarget()
         if action == ACTION_STL:
@@ -219,20 +232,29 @@ class CoupGame:
         pass
 
     # returns a player object, requires input
-    def askForTarget(self, steal = False):
+    def askForTarget(self, steal = False) -> CoupPlayer:
         possibleTargets = []
         for i in range(self.playerCount):
             if (i != self.currentPlayer) and (not steal or self.alive[i].coins > 0):
                 possibleTargets.append(i)
         self.displayTargets(possibleTargets)
-        return self.alive[self.currentPlayer].getTarget(possibleTargets)
+
+        user_input = self.alive[self.currentPlayer].getTarget(possibleTargets)
+        return self.alive[user_input]
 
 if __name__ == "__main__":
     game = CoupGame();
-    game.addPlayer("Player 0")
+    player0 = CoupPlayer("Player 0");
+    game.addPlayer(player0)
     game.addPlayer("Player 1")
     game.addPlayer("Player 2")
-    
+    game.addPlayer("Player 3")
+    game.addPlayer("Player 4")
+    game.addPlayer("Player 5")
+    game.deal()
+    #for player in game.alive:
+        #print(player.cards)
+        
     #target = game.askForTarget()
     #print(target, game.alive[target].name)
 

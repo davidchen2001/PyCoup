@@ -12,8 +12,10 @@ class CoupPlayer:
     def die(self):
         self.isAlive = False
 
-    def lose_card(self, lost):
-        # replace the card with the "dead" card
+    def lose_card(self):
+        lost = self.cards[0]
+        # TODO: replace the card with the "dead" card ###
+
         self.numCards -= 1
         if(lost==self.cards[0]):
             self.cards[0] = -2
@@ -23,6 +25,8 @@ class CoupPlayer:
         #check if player is alive
         if(self.numCards <= 0):
             self.die()
+        elif(self.cards[0] == -2):
+            self.cards[0], self.cards[1] = self.cards[1], self.cards[0]
 
         return lost
     
