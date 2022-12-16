@@ -1,5 +1,12 @@
 import random
 
+GAMECARDS = ["Duke", "Assassin", "Ambassador", "Captain", "Contessa"]
+CARD_DUKE = 0
+CARD_ASSN = 1
+CARD_AMBR = 2
+CARD_CAPT = 3
+CARD_CONT = 4
+
 class CoupDeck:
     def __init__(self):
         self.deck = [0,1,2,3,4]*3

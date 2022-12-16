@@ -1,16 +1,20 @@
 from turtle import pos
-from CoupDeck import CoupDeck
+from CoupActions import *
+from CoupDeck import *
 from CoupPlayer import CoupPlayer
 import math
 
 class CoupGame:
-    actionToString = {0: 'Tax',
-                        1: 'Assassinate',
-                        2: 'Exchange',
-                        3: 'Steal',
-                        5: 'Income',
-                        6: 'Foreign Aid',
-                        7: 'Coup'}
+    ''' 
+    ACTIONS:
+    1: Assassinate
+    2: Exchange
+    3: Steal
+    4: Tax
+    5: Income
+    6: Foreign Aid
+    7: Coup
+    '''
 
     def __init__(self):
         self.playerCount = 0
@@ -32,20 +36,20 @@ class CoupGame:
 
     def takeTurn(self, action):
         player = self.alive[self.currentPlayer]
-        possibleActions = player.getActions()
+        possibleActions = player.getPossibleActions()
 
         if action not in possibleActions:
             return False
 
-        if (3 in possibleActions and self.noSteal()):
+        if (ACTION_STL in possibleActions and self.noSteal()):
             possibleActions.remove(3)
         action = self.getChosenAct(possibleActions, player)
         target = self.getTarget(action)
         self.displayAction(action, target)
         # assass must spend
-        if action == 1:
+        if action == ACTION_ASS:
             player.coins -= 3
-        if action == 7:
+        if action == ACTION_COU:
             player.coins -= 7
 
         # challenge
@@ -65,17 +69,18 @@ class CoupGame:
 
         # execute
         if actionWentThrough:
-            if action == 0:
-                self.tax(player)
-            elif action == 1:
+
+            if action == ACTION_ASS:
                 self.assass(player, target)
-            elif action == 2:
+            elif action == ACTION_EXC:
                 self.exchange(player)
-            elif action == 3:
+            elif action == ACTION_STL:
                 self.steal(player, target)
-            elif action == 5:
+            elif action == ACTION_TAX:
+                self.tax(player)
+            elif action == ACTION_INC:
                 self.income(player)
-            elif action == 6:
+            elif action == ACTION_FOR:
                 self.foreignAid(player)
             else:
                 self.coup(player, target)
@@ -126,13 +131,13 @@ class CoupGame:
         # returns card, blocker
         # card is integer
         # blocker is a player object
-        if action == 1:
+        if action == ACTION_ASS:
             # Ask target if they want to block with contessa (card 4)
             pass
-        elif action == 3:
+        elif action == ACTION_STL:
             # Give all players a chance to block with captain (card 3) or ambassador (card 2)
             pass
-        elif action == 6:
+        elif action == ACTION_FOR:
             # Give all players a chance to block with duke (card 0)
             pass
 
@@ -141,6 +146,7 @@ class CoupGame:
     # challenge method requires player input
     def challenge(self, action, target):
         if action > 4:
+            # Universal actions
             return None
         ind = self.alive.index(target)
         # Start timer
@@ -197,9 +203,9 @@ class CoupGame:
 
     # returns a player object
     def getTarget(self, action):
-        if action == 1 or action == 7:
+        if action == ACTION_ASS or action == ACTION_COU:
             return self.askForTarget()
-        if action == 3:
+        if action == ACTION_STL:
             return self.askForTarget(True)
         return None
 
@@ -210,10 +216,10 @@ class CoupGame:
         pass
 
     # returns a player object, requires input
-    def askForTarget(self, captain = False):
+    def askForTarget(self, steal = False):
         possibleTargets = []
         for i in range(self.playerCount):
-            if (i != self.currentPlayer) and (not captain or self.alive[i].coins > 0):
+            if (i != self.currentPlayer) and (not steal or self.alive[i].coins > 0):
                 possibleTargets.append(i)
         self.displayTargets(possibleTargets)
         # Placeholder

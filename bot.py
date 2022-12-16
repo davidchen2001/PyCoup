@@ -2,7 +2,7 @@ from pydoc import describe
 from turtle import pos
 import discord
 import json
-from CoupGame import CoupGame
+from gamerunner import CoupGame
 import asyncio
 import math
 
@@ -127,7 +127,7 @@ class GameClient(discord.Client):
                     return
 
                 await self.game_channel.send(f"It is now your turn, {self.game_inst.alive[self.game_inst.currentPlayer].name}")
-                posActs = self.game_inst.alive[self.game_inst.currentPlayer].getActions()
+                posActs = self.game_inst.alive[self.game_inst.currentPlayer].getPossibleActions()
                 if 3 in posActs and self.game_inst.noSteal():
                     posActs.remove(3)
                 toDisplay = "\n".join([act for i, act in enumerate(ALLACTIONS) if i in posActs])
