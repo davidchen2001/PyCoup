@@ -199,7 +199,8 @@ class CoupGame:
     def getChosenAct(actions, player):
         # Ask player which action they want to take
         # Return an integer corresponding to the action
-        pass
+        return player.getAction()
+
 
     # returns a player object
     def getTarget(self, action):
@@ -210,7 +211,9 @@ class CoupGame:
         return None
 
     def displayTargets(self, listOfPlayers):
-        pass
+        print("------- Possible targets: ")
+        for i in range(len(listOfPlayers)):
+            print("------- " + str(listOfPlayers[i]) + " - " + self.alive[listOfPlayers[i]].name)
 
     def displayAction(self, action, target):
         pass
@@ -222,9 +225,16 @@ class CoupGame:
             if (i != self.currentPlayer) and (not steal or self.alive[i].coins > 0):
                 possibleTargets.append(i)
         self.displayTargets(possibleTargets)
-        # Placeholder
-        return None
+        return self.alive[self.currentPlayer].getTarget(possibleTargets)
 
+if __name__ == "__main__":
+    game = CoupGame();
+    game.addPlayer("Player 0")
+    game.addPlayer("Player 1")
+    game.addPlayer("Player 2")
+    
+    #target = game.askForTarget()
+    #print(target, game.alive[target].name)
 
 
             

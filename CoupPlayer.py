@@ -51,14 +51,26 @@ class CoupPlayer:
                 return action
             except:
                 print("------- Invalid action input received.")
+
+    def getTarget(self, possibleTargets) -> int:
+        #how will we ensure player knows game state?
+        
+        while(True):
+            user_input = input("--- Who would you like to target? ")
+            try:
+                action = int(user_input)
+                assert action in possibleTargets
+                return action
+            except:
+                print("------- Invalid target input received.")
                     
                 
-
+'''
 if __name__ == "__main__":
     player1 = CoupPlayer("Player 1");
     action = player1.getAction()
     print(action, actionToString[action])
-        
+'''     
 
 
 
