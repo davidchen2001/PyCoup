@@ -13,12 +13,32 @@ class CoupPlayer:
     def die(self):
         self.isAlive = False
 
+    # ask player which card to lose from their hand
+    # returns card ID (not indice)
     def chooseLostCard(self):
-        return self.cards[0]
-        # TODO: replace the card with the "dead" card ###
+        print("--- (" + self.name + ") Choose which cards to lose:")
+        chosen = -1
+        while (chosen == -1):
+            for i in range(len(self.cards)):
+                print("------ " + str(i) + ") " + GAMECARDS[self.cards[i]])
+            user_input = input()
+            try:
+                user_input = int(user_input)
+                assert (user_input < len(self.cards))
+                assert (user_input >= 0)
+                chosen = user_input
+                break
+
+            except:
+                print("------- Invalid input received.")
+        
+        return chosen
+        
 
     def lose_card(self):
-        lost = self.chooseLostCard()
+        lost = self.cards[0]
+        if (self.numCards == 2):
+            lost = self.chooseLostCard()
 
         self.numCards -= 1
         if(lost==self.cards[0]):
@@ -117,6 +137,7 @@ class CoupPlayer:
         prompt += actionToString[action]
         prompt += ". Do you want to block this action?\n"
         prompt += "------ Type N for no block\n"
+        prompt += "------ Type C to view my cards and coins\n"
 
         for card in possibleBlocks:
             prompt += "------ Type " + str(card) + " to block with " + GAMECARDS[card] + "\n"

@@ -74,7 +74,6 @@ class CoupGame:
         challenger = self.challenge(action, player)
         if challenger:
             actionWentThrough = self.resolveChallenge(challenger, player, action)
-            self.displayChallengeResults(challenger, player, action, actionWentThrough)
 
         # block
         if actionWentThrough:
@@ -204,6 +203,7 @@ class CoupGame:
     # returns True if player was truthful (action succeeds)
     # returns False if player was lying and the challenge was successful (action fails)
     def resolveChallenge(self, challenger, personChallenged, action) -> bool:
+        truth = True
         if (action in personChallenged.cards):
             # action codes correspond with card codes
             # Ex) ACTN_STL = 3 = CARD_CAPT
@@ -212,16 +212,21 @@ class CoupGame:
             personChallenged.cards.append(self.deck.draw())
 
             self.loseCard(challenger)
-            return True
+            truth = True
 
         else:
             self.loseCard(personChallenged)
-            return False
+
+            truth = False
+
+        self.displayChallengeResults(challenger, personChallenged, action, truth)
+        return truth
 
     def loseCard(self, player):
         lostCard = player.lose_card()
         self.cardsRemoved[lostCard] += 1
         if not player.isAlive:
+            print(player.name, "has lost!")
             self.playerCount -= 1
             ind = self.alive.index(player)
             self.dead.append(self.alive.pop(ind))
@@ -271,17 +276,21 @@ class CoupGame:
 
         print(output)
 
-    def displayChallengeResults(self, challenger, personChallenged, card, actionWentThrough):
+    def displayChallengeResults(self, challenger, personChallenged, card, truth, lost):
         output = challenger.name
         output += " challenged the "
         output += GAMECARDS[card]
         output += " of "
         output += personChallenged.name
         output += ". The challenge was "
-        if (actionWentThrough):
-            output += "unsuccessful!"
+        if (truth):
+            output += "unsuccessful! "
+            output += challenger.name
         else:
-            output += "successful!"
+            output += "successful! "
+            output += personChallenged.name
+        output += " lost their "
+        output += GAMECARDS[lost]
         print(output)
 
 
@@ -304,10 +313,10 @@ if __name__ == "__main__":
     game.addPlayer(player0)
     game.addPlayer(player1)
     game.addPlayer("Player 2")
-    game.addPlayer("Player 3")
+    #game.addPlayer("Player 3")
     #game.addPlayer("Player 4")
     #game.addPlayer("Player 5")
     game.deal()
-    while (game.playerCount > 0):
+    while (game.playerCount > 1):
         game.takeTurn()
-
+    print(game.alive[0].name, "is the winner!")
