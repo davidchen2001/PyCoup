@@ -1,11 +1,11 @@
 import random
 
-GAMECARDS = ["Duke", "Assassin", "Ambassador", "Captain", "Contessa"]
-CARD_DUKE = 0
+GAMECARDS = ["Contessa", "Assassin", "Ambassador", "Captain", "Duke"]
+CARD_CONT = 0
 CARD_ASSN = 1
 CARD_AMBR = 2
 CARD_CAPT = 3
-CARD_CONT = 4
+CARD_DUKE = 4
 
 class CoupDeck:
     def __init__(self):

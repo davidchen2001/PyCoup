@@ -145,13 +145,13 @@ class CoupGame:
         # card is integer
         # blocker is a player object
         if action == ACTION_ASS:
-            # Ask target if they want to block with contessa (card 4)
+            # Ask target if they want to block with contessa (card 0)
             pass
         elif action == ACTION_STL:
-            # Give all players a chance to block with captain (card 3) or ambassador (card 2)
+            # Ask target if they want to block with captain (card 3) or ambassador (card 2)
             pass
         elif action == ACTION_FOR:
-            # Give all players a chance to block with duke (card 0)
+            # Give all players a chance to block with duke (card 4)
             pass
 
         return -1, None
@@ -161,6 +161,7 @@ class CoupGame:
         if action > 4:
             # Universal actions
             return None
+
         ind = self.alive.index(target)
         # Start timer
         # send this message to each player:
@@ -178,14 +179,18 @@ class CoupGame:
         # Otherwise return None
         return None
 
-    def resolveChallenge(self, challenger, personChallenged, action):
+    # after a player has indicated they want to challenge an action
+    def resolveChallenge(self, challenger, personChallenged, action) -> bool:
         if (action in personChallenged.cards):
+            # action codes correspond with card codes
+            # Ex) ACTN_STL = 3 = CARD_CAPT
             personChallenged.cards.remove(action)
             self.deck.add(action)
             personChallenged.cards.append(self.deck.draw())
 
             self.loseCard(challenger)
             return True
+
         else:
             self.loseCard(personChallenged)
             return False
@@ -229,7 +234,19 @@ class CoupGame:
             print("------- " + str(listOfPlayers[i]) + " - " + self.alive[listOfPlayers[i]].name)
 
     def displayAction(self, action, target):
-        pass
+        output = self.alive[self.currentPlayer].name
+        if(action > 4):
+            # universal action
+            output += " will "
+        else:
+            output += " wants to "
+        output += actionToString[action]
+
+        if (target is not None):
+            output += ", target = "
+            output += target.name
+
+        print(output)
 
     # returns a player object, requires input
     def askForTarget(self, steal = False) -> CoupPlayer:
@@ -252,9 +269,15 @@ if __name__ == "__main__":
     game.addPlayer("Player 4")
     game.addPlayer("Player 5")
     game.deal()
+    for i in range(1, len(actionToString) + 1):
+        target = None
+        if ((i == ACTION_ASS) or (i==ACTION_COU) or (i==ACTION_STL)):
+            target = player0
+        game.displayAction(i, target)
+
     #for player in game.alive:
         #print(player.cards)
-        
+
     #target = game.askForTarget()
     #print(target, game.alive[target].name)
 
