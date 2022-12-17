@@ -126,6 +126,9 @@ class CoupPlayer:
             try:
                 if (user_input.lower() == "n"):
                     user_input = -1
+                elif ((user_input.lower() == "c") or (user_input.lower() == "n")):
+                    print(self.getStatusString())
+                    continue
                 else:
                     user_input = int(user_input)
                 assert (user_input in possibleBlocks) or (user_input == -1)
@@ -158,6 +161,27 @@ class CoupPlayer:
                     continue
                 else:
                     print("------- Invalid input received.")
+    
+    # ask player which cards to keep out of possibleCards
+    # returns array of Card IDs (not indices)
+    def exchange(self, possibleCards):
+        print("--- (" + self.name + ") Choose which cards to keep from the following:")
+        chosenCards = []
+        while (len(possibleCards) != 2):
+            for i in range(len(possibleCards)):
+                print("------ " + str(i) + ") " + GAMECARDS[possibleCards[i]])
+            user_input = input()
+            try:
+                user_input = int(user_input)
+                assert (user_input < len(possibleCards))
+                assert (user_input >= 0)
+                chosenCards.append(possibleCards.pop(user_input))
+
+            except:
+                print("------- Invalid input received.")
+        return chosenCards
+
+
 
 if __name__ == "__main__":
     player1 = CoupPlayer("Player 1");

@@ -74,6 +74,7 @@ class CoupGame:
         challenger = self.challenge(action, player)
         if challenger:
             actionWentThrough = self.resolveChallenge(challenger, player, action)
+            self.displayChallengeResults(challenger, player, action, actionWentThrough)
 
         # block
         if actionWentThrough:
@@ -103,6 +104,7 @@ class CoupGame:
             else:
                 self.coup(player, target)
 
+            print(player.getStatusString())
         self.currentPlayer += 1
         self.currentPlayer %= self.playerCount
         return True
@@ -123,16 +125,16 @@ class CoupGame:
     def exchange(self, player):
         newHand = []
         toChoose = []
+        handSize = player.numCards
         for card in player.cards:
-            if card == -2:
-                newHand.append(card)
-            else:
+            if card != -2:
                 toChoose.append(card)
         toChoose.append(self.deck.draw())
         toChoose.append(self.deck.draw())
-        # TODO Ask player which of the cards in toChoose they want
-        # Choose 2 - len(newHand) of them
-        # newHand.append(choice) for each choice
+        newHand = player.exchange(toChoose)
+        assert len(toChoose) == 2
+        self.deck.add(toChoose[0], toChoose[1])
+        assert (len(newHand) == handSize)
         player.cards = newHand
 
         # player mentioned so that x assassinated y could be displayed
@@ -268,6 +270,20 @@ class CoupGame:
             output += target.name
 
         print(output)
+
+    def displayChallengeResults(self, challenger, personChallenged, card, actionWentThrough):
+        output = challenger.name
+        output += " challenged the "
+        output += GAMECARDS[card]
+        output += " of "
+        output += personChallenged.name
+        output += ". The challenge was "
+        if (actionWentThrough):
+            output += "unsuccessful!"
+        else:
+            output += "successful!"
+        print(output)
+
 
     # returns a player object, requires input
     def askForTarget(self, steal = False) -> CoupPlayer:

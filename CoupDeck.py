@@ -22,4 +22,4 @@ class CoupDeck:
         self.deck.append(card1)
         if card2 >= -1:
             self.deck.append(card2)
-        random.shuffle(self.deck)
+        self.shuffle()
