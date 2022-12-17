@@ -142,7 +142,7 @@ class CoupGame:
     # getBlocker requires player input
     def getBlocker(action, target):
         # returns card, blocker
-        # card is integer
+        # card is integer (-1 if no block) that blocker uses to block
         # blocker is a player object
         if action == ACTION_ASS:
             # Ask target if they want to block with contessa (card 0)
@@ -157,7 +157,7 @@ class CoupGame:
         return -1, None
 
     # challenge method requires player input
-    def challenge(self, action, target):
+    def challenge(self, action, target) -> CoupPlayer:
         if action > 4:
             # Universal actions
             return None
@@ -180,6 +180,8 @@ class CoupGame:
         return None
 
     # after a player has indicated they want to challenge an action
+    # returns True if player was truthful (action succeeds)
+    # returns False if player was lying and the challenge was successful (action fails)
     def resolveChallenge(self, challenger, personChallenged, action) -> bool:
         if (action in personChallenged.cards):
             # action codes correspond with card codes
