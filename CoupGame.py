@@ -140,21 +140,35 @@ class CoupGame:
         
 
     # getBlocker requires player input
-    def getBlocker(action, target):
+    def getBlocker(self, action: int, target: CoupPlayer):
         # returns card, blocker
         # card is integer (-1 if no block) that blocker uses to block
         # blocker is a player object
+        card = -1
+        blocker = None
+
         if action == ACTION_ASS:
             # Ask target if they want to block with contessa (card 0)
-            pass
+            card = target.getBlock(action)
+            if (card != -1):
+                blocker = target 
+            
         elif action == ACTION_STL:
             # Ask target if they want to block with captain (card 3) or ambassador (card 2)
-            pass
+            card = target.getBlock(action)
+            if (card != -1):
+                blocker = target 
+
         elif action == ACTION_FOR:
             # Give all players a chance to block with duke (card 4)
-            pass
+            for player in self.alive:
+                if (player != self.alive[self.currentPlayer]):
+                    card = player.getBlock(action)
+                    if (card != -1):
+                        blocker = player
+                        break 
 
-        return -1, None
+        return card, blocker
 
     # challenge method requires player input
     def challenge(self, action, target) -> CoupPlayer:
@@ -263,9 +277,11 @@ class CoupGame:
 
 if __name__ == "__main__":
     game = CoupGame();
-    player0 = CoupPlayer("Player 0");
+    player0 = CoupPlayer("Player 0")
+    player1 = CoupPlayer("Player 1")
+
     game.addPlayer(player0)
-    game.addPlayer("Player 1")
+    game.addPlayer(player1)
     game.addPlayer("Player 2")
     game.addPlayer("Player 3")
     game.addPlayer("Player 4")
@@ -274,8 +290,16 @@ if __name__ == "__main__":
     for i in range(1, len(actionToString) + 1):
         target = None
         if ((i == ACTION_ASS) or (i==ACTION_COU) or (i==ACTION_STL)):
-            target = player0
+            target = player1
         game.displayAction(i, target)
+        '''
+        card, blocker = game.getBlocker(i, target)
+        if blocker is None:
+            if card != -1:
+                print("Block with " + str(card) + " None - ERROR***")
+        else:
+            print("Block with " + str(card) + " " + blocker.name)
+        '''
 
     #for player in game.alive:
         #print(player.cards)
