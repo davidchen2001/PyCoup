@@ -35,6 +35,14 @@ class CoupPlayer:
 
         return lost
     
+    def getStatusString(self):
+        output = "------ Current hand: "
+        output += self.getHandString()
+        output += " and "
+        output += str(self.coins)
+        output += " coins"
+        return output
+
     def getHandString(self):
         if ((self.isAlive == False) or (self.numCards == 0)):
             return "No cards"
@@ -47,36 +55,31 @@ class CoupPlayer:
 
     def getPossibleActions(self):
         if self.coins < 3:
-            return([0, 2, 3, 5, 6])
+            return([ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR])
         elif self.coins < 7:
-            return([0, 1, 2, 3, 5, 6])
+            return([ACTION_ASS, ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR])
         elif self.coins < 10:
-            return([0, 1, 2, 3, 5, 6, 7])
+            return([ACTION_ASS, ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR, ACTION_COU])
         else:
-            return([7])
+            return([ACTION_COU])
 
-    def getAction(self) -> int:
+    def getAction(self, possibleActions) -> int:
         #how will we ensure player knows game state?
         
         while(True):
-            user_input = input("--- Which action to play? ")
+            print("--- Type H for help, C for my cards and coins")
+            user_input = input("--- (" + self.name + ") Which action to play? ")
             if (user_input.lower() == "h") or (user_input.lower() == "help"):
-                print("------ Type H for help, C for my cards and coins")
-                for i in range(1, len(actionToString)):
+                for i in possibleActions:
                     print("------ " + str(i) + " - " + actionToString[i])
                 continue
             elif (user_input.lower() == "c") or ("coin" in user_input.lower()) or ("card" in user_input.lower()):
-                output = "------ Current hand: "
-                output += self.getHandString()
-                output += " and "
-                output += str(self.coins)
-                output += " coins"
-                print(output)
+                print(self.getStatusString())
                 continue
 
             try:
                 action = int(user_input)
-                assert((action <= 7) and (action > 0))
+                assert(action in possibleActions)
                 return action
             except:
                 print("------- Invalid action input received.")
@@ -130,7 +133,31 @@ class CoupPlayer:
             except:
                 print("------- Invalid input received.")
 
-        return user_input     
+        return user_input   
+
+    # asks user whether they want to challenge an action
+    # returns True if they want to challenge, False if they do not
+    def getChallenge(self, currentPlayer:str, card, prob) -> bool:
+
+            prompt = "--- (" + self.name + ") "
+            prompt += currentPlayer
+            prompt += " claims to have " 
+            prompt += GAMECARDS[card]
+            prompt += ", probability of truth = "
+            prompt += str(prob)
+            prompt += ". Challenge? (Y/N) "
+
+            while(True):
+                user_input = input(prompt)
+                if (user_input.lower() == "n"):
+                    return False
+                elif (user_input.lower() == "y"):
+                    return True
+                elif ((user_input.lower() == "c") or (user_input.lower() == "n")):
+                    print(self.getStatusString())
+                    continue
+                else:
+                    print("------- Invalid input received.")
 
 if __name__ == "__main__":
     player1 = CoupPlayer("Player 1");

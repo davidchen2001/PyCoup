@@ -47,16 +47,20 @@ class CoupGame:
             self.alive[i].cards[0] = self.deck.draw()
             self.alive[i].cards[1] = self.deck.draw()
 
-    def takeTurn(self, action):
+    def takeTurn(self):
         player = self.alive[self.currentPlayer]
         possibleActions = player.getPossibleActions()
 
-        if action not in possibleActions:
-            return False
-
         if (ACTION_STL in possibleActions and self.noSteal()):
             possibleActions.remove(3)
-        action = self.getChosenAct(possibleActions, player)
+
+        action = -1
+        while (action < 0):
+            action = self.getChosenAct(possibleActions, player)
+            if action not in possibleActions:
+                print("*** INVALID ACTION")
+                action = -1
+
         target = self.getTarget(action)
         self.displayAction(action, target)
         # assass must spend
@@ -64,7 +68,8 @@ class CoupGame:
             player.coins -= 3
         if action == ACTION_COU:
             player.coins -= 7
-
+        
+        actionWentThrough = True
         # challenge
         challenger = self.challenge(action, player)
         if challenger:
@@ -125,7 +130,7 @@ class CoupGame:
                 toChoose.append(card)
         toChoose.append(self.deck.draw())
         toChoose.append(self.deck.draw())
-        # Ask player which of the cards in toChoose they want
+        # TODO Ask player which of the cards in toChoose they want
         # Choose 2 - len(newHand) of them
         # newHand.append(choice) for each choice
         player.cards = newHand
@@ -138,7 +143,6 @@ class CoupGame:
     def coup(self, player, target):
         self.loseCard(target)    
         
-
     # getBlocker requires player input
     def getBlocker(self, action: int, target: CoupPlayer):
         # returns card, blocker
@@ -177,19 +181,20 @@ class CoupGame:
             return None
 
         ind = self.alive.index(target)
-        # Start timer
         # send this message to each player:
         for i in range(self.playerCount):
             if i != ind:
                 numLeft = 3 - self.cardsRemoved[action]
                 totalLeft = 15 - sum(self.cardsRemoved) - self.alive[i].numCards - target.numCards
-                for card in self.alive[i]:
+                for card in self.alive[i].cards:
                     if card == action:
                         numLeft -= 1
-                prob = 1 - math.comb(totalLeft, numLeft) / math.comb(totalLeft + target.numCards, numLeft)
+                prob = round(1 - math.comb(totalLeft, numLeft) / math.comb(totalLeft + target.numCards, numLeft), 3)
+                
                 # tell alive[i]
-                pass
-        # If someone clicks challenge in that time, that player object
+                if (self.alive[i].getChallenge(target.name, action, prob) == True):
+                    return self.alive[i]
+
         # Otherwise return None
         return None
 
@@ -230,10 +235,10 @@ class CoupGame:
         return True
 
     # getChosenAct requires player input
-    def getChosenAct(actions, player) -> int:
+    def getChosenAct(self, actions, player) -> int:
         # Ask player which action they want to take
         # Return an integer corresponding to the action
-        return player.getAction()
+        return player.getAction(actions)
 
 
     # returns a player object
@@ -284,30 +289,9 @@ if __name__ == "__main__":
     game.addPlayer(player1)
     game.addPlayer("Player 2")
     game.addPlayer("Player 3")
-    game.addPlayer("Player 4")
-    game.addPlayer("Player 5")
+    #game.addPlayer("Player 4")
+    #game.addPlayer("Player 5")
     game.deal()
-    for i in range(1, len(actionToString) + 1):
-        target = None
-        if ((i == ACTION_ASS) or (i==ACTION_COU) or (i==ACTION_STL)):
-            target = player1
-        game.displayAction(i, target)
-        '''
-        card, blocker = game.getBlocker(i, target)
-        if blocker is None:
-            if card != -1:
-                print("Block with " + str(card) + " None - ERROR***")
-        else:
-            print("Block with " + str(card) + " " + blocker.name)
-        '''
-
-    #for player in game.alive:
-        #print(player.cards)
-
-    #target = game.askForTarget()
-    #print(target, game.alive[target].name)
-
-
-            
-
+    while (game.playerCount > 0):
+        game.takeTurn()
 
