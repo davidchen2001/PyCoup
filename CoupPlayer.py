@@ -1,16 +1,24 @@
 from CoupActions import *
 from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CAPT, CARD_CONT, CARD_DUKE
+from CoupHistory import *
 
 class CoupPlayer:
+    next_id = 0
 
     def __init__(self, name):
         self.name = name
+        self.newGame()
+        self.id = CoupPlayer.next_id
+        CoupPlayer.next_id += 1
+        
+    def newGame(self):
         self.coins = 2
         self.cards = [-2, -2]
         self.numCards = 2
         self.isAlive = True
-        self.isPlaying = False 
-
+        self.isPlaying = False
+        self.history = None
+        
     def getIsPlaying(self):
         return self.isPlaying
     
@@ -22,6 +30,11 @@ class CoupPlayer:
 
     def die(self):
         self.isAlive = False
+
+    # add CoupHistory reference to player
+    def attachHistory(self, history):
+        assert isinstance(history, CoupHistory)
+        self.history = history
 
     # ask player which card to lose from their hand
     # returns card ID (not indice)
@@ -42,9 +55,6 @@ class CoupPlayer:
             except:
                 print("------- Invalid input received.")
         
-        
-        
-
     def lose_card(self):
         lost = self.cards[0]
         if (self.numCards == 2):
@@ -121,9 +131,9 @@ class CoupPlayer:
         while(True):
             user_input = input("--- Who would you like to target? ")
             try:
-                action = int(user_input)
-                assert action in possibleTargets
-                return action
+                player_index = int(user_input)
+                assert player_index in possibleTargets
+                return player_index
             except:
                 print("------- Invalid target input received.")
 
@@ -171,10 +181,10 @@ class CoupPlayer:
 
     # asks user whether they want to challenge an action
     # returns True if they want to challenge, False if they do not
-    def getChallenge(self, currentPlayer:str, card, prob) -> bool:
+    def getChallenge(self, currentPlayerInfo, card, prob) -> bool:
 
             prompt = "--- (" + self.name + ") "
-            prompt += currentPlayer
+            prompt += currentPlayerInfo["name"]
             prompt += " claims to have " 
             prompt += GAMECARDS[card]
             prompt += ", probability of truth = "

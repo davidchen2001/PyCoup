@@ -2,6 +2,7 @@ from turtle import pos
 from CoupActions import *
 from CoupDeck import *
 from CoupPlayer import CoupPlayer
+from CoupHistory import *
 import math
 
 class CoupGame:
@@ -24,23 +25,32 @@ class CoupGame:
         self.dead = []
         self.cardsRemoved = [0,0,0,0,0]
         self.deck = CoupDeck()
+        self.history = CoupHistory()
         self.NUM_DECK = 15
 
     def addPlayer(self, player):
         if(self.playerCount >= 6):
             return
 
+        playerId = None
+
         if isinstance(player, str):
             # if we need to create a player with the supplied name
             self.alive.append(CoupPlayer(player))
+            playerId = self.alive[self.playerCount].id
 
         elif isinstance(player, CoupPlayer):
             # if the player is already created and we just need to add it
             self.alive.append(player)
+            playerId = player.id
 
         else:
             return
         
+        self.alive[self.playerCount].attachHistory(self.history)
+        
+        self.history.currentOrder.append(playerId)
+        self.history.currentCoins[playerId] = 2
         self.playerCount += 1
 
     def deal(self):
@@ -61,8 +71,6 @@ class CoupGame:
         rankings.reverse()
 
         return rankings
-
-
 
     def takeTurn(self):
         player = self.alive[self.currentPlayer]
@@ -86,11 +94,18 @@ class CoupGame:
         if action == ACTION_COU:
             player.coins -= 7
         
+        if (target is None):
+            self.history.newTurn(player.id, action)
+        else:
+            self.history.newTurn(player.id, action, target.id)
+                
         actionWentThrough = True
         # challenge
         challenger = self.challenge(action, player)
         if challenger:
-            actionWentThrough = self.resolveChallenge(challenger, player, action)
+            truthful = self.resolveChallenge(challenger, player, action)
+            actionWentThrough = truthful
+            self.history.logChallenge(challenger.id, (not truthful))
 
         # block
         if actionWentThrough:
@@ -104,7 +119,9 @@ class CoupGame:
                     # challenge block
                     challenger = self.challenge(card, blocker)
                     if challenger:
-                        actionWentThrough = not self.resolveChallenge(challenger, blocker, card)
+                        truthfulBlock = not self.resolveChallenge(challenger, blocker, card)
+                        self.history.logBlockChallenge(challenger.id, not truthfulBlock)
+                        actionWentThrough = not truthfulBlock
 
         # execute
         if actionWentThrough:
@@ -125,15 +142,19 @@ class CoupGame:
                 self.coup(player, target)
 
             print(player.getStatusString())
-        
+
+        self.history.currentCoins[player.id] = player.coins
+        if ((target is not None) and (target.isAlive)):
+            self.history.currentCoins[target.id] = target.coins
+
         for p in self.alive:
             if p.getIsPlaying() == True:
                 p.setIsPlaying(False)
 
         self.currentPlayer += 1
+        self.currentPlayer %= self.playerCount
         self.alive[self.currentPlayer].setIsPlaying(True)
 
-        self.currentPlayer %= self.playerCount
         return True
 
     def tax(self, player):
@@ -224,8 +245,12 @@ class CoupGame:
                         numLeft -= 1
                 prob = round(1 - math.comb(totalLeft, numLeft) / math.comb(totalLeft + target.numCards, numLeft), 3)
                 
+                targetInfo = {}
+                targetInfo["id"] = target.id
+                targetInfo["name"] = target.name
+                
                 # tell alive[i]
-                if (self.alive[i].getChallenge(target.name, action, prob) == True):
+                if (self.alive[i].getChallenge(targetInfo, action, prob) == True):
                     return self.alive[i]
 
         # Otherwise return None
@@ -261,6 +286,11 @@ class CoupGame:
             print(player.name, "has lost!")
             self.playerCount -= 1
             ind = self.alive.index(player)
+
+            self.history.currentCoins[player.id] = -1
+            self.history.currentOrder.pop(self.currentPlayer)
+            print(self.history.currentOrder)
+
             self.dead.append(self.alive.pop(ind))
             if ind <= self.currentPlayer:
                 # to offset adding 1
