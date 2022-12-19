@@ -9,6 +9,16 @@ class CoupPlayer:
         self.cards = [-2, -2]
         self.numCards = 2
         self.isAlive = True
+        self.isPlaying = False 
+
+    def getIsPlaying(self):
+        return self.isPlaying
+    
+    def setIsPlaying(self, value):
+        self.isPlaying = value
+    
+    def getCoins(self):
+        return self.coins
 
     def die(self):
         self.isAlive = False

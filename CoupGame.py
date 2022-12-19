@@ -24,6 +24,7 @@ class CoupGame:
         self.dead = []
         self.cardsRemoved = [0,0,0,0,0]
         self.deck = CoupDeck()
+        self.NUM_DECK = 15
 
     def addPlayer(self, player):
         if(self.playerCount >= 6):
@@ -124,7 +125,14 @@ class CoupGame:
                 self.coup(player, target)
 
             print(player.getStatusString())
+        
+        for p in self.alive:
+            if p.getIsPlaying() == True:
+                p.setIsPlaying(False)
+
         self.currentPlayer += 1
+        self.alive[self.currentPlayer].setIsPlaying(True)
+
         self.currentPlayer %= self.playerCount
         return True
 
@@ -316,8 +324,7 @@ class CoupGame:
             output += personChallenged.name
         output += " lost their "
         output += GAMECARDS[lost]
-        print(output)
-
+        print(output)        
 
     # returns a player object, requires input
     def askForTarget(self, steal = False) -> CoupPlayer:
@@ -329,6 +336,14 @@ class CoupGame:
 
         user_input = self.alive[self.currentPlayer].getTarget(possibleTargets)
         return self.alive[user_input]
+    
+    def getNumCardsRemaining(self):
+        remaining = self.NUM_DECK
+
+        for i in range(self.cardsRemoved):
+            remaining -= self.cardsRemoved[i]
+        return remaining
+            
 
 if __name__ == "__main__":
     game = CoupGame();
