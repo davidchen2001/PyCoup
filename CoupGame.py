@@ -47,6 +47,22 @@ class CoupGame:
             self.alive[i].cards[0] = self.deck.draw()
             self.alive[i].cards[1] = self.deck.draw()
 
+    # runs the game, returns ranking of players from winner to worst
+    def run(self):
+        if (self.playerCount <= 1):
+            return None
+
+        self.deal()
+        while (self.playerCount > 1):
+            self.takeTurn()
+
+        rankings = (self.dead + [self.alive[0]])
+        rankings.reverse()
+
+        return rankings
+
+
+
     def takeTurn(self):
         player = self.alive[self.currentPlayer]
         possibleActions = player.getPossibleActions()
@@ -77,13 +93,17 @@ class CoupGame:
 
         # block
         if actionWentThrough:
-            card, blocker = self.getBlocker(action, target)
-            if card != -1:
-                actionWentThrough = False
-                # challenge block
-                challenger = self.challenge(card, blocker)
-                if challenger:
-                    actionWentThrough = not self.resolveChallenge(challenger, blocker, card)
+            if (target is None) or (target.isAlive):
+                # if target is dead they cannot block
+
+                card, blocker = self.getBlocker(action, target)
+                if card != -1:
+                    actionWentThrough = False
+
+                    # challenge block
+                    challenger = self.challenge(card, blocker)
+                    if challenger:
+                        actionWentThrough = not self.resolveChallenge(challenger, blocker, card)
 
         # execute
         if actionWentThrough:
@@ -138,6 +158,10 @@ class CoupGame:
 
         # player mentioned so that x assassinated y could be displayed
     def assass(self, player, target):
+        if (target.isAlive == False):
+            assert (target.numCards == 0)
+            return
+
         self.loseCard(target)
 
     # player mentioned so that x couped y could be displayed
@@ -211,15 +235,15 @@ class CoupGame:
             self.deck.add(action)
             personChallenged.cards.append(self.deck.draw())
 
-            self.loseCard(challenger)
+            lostCard = self.loseCard(challenger)
             truth = True
 
         else:
-            self.loseCard(personChallenged)
+            lostCard = self.loseCard(personChallenged)
 
             truth = False
 
-        self.displayChallengeResults(challenger, personChallenged, action, truth)
+        self.displayChallengeResults(challenger, personChallenged, action, truth, lostCard)
         return truth
 
     def loseCard(self, player):
@@ -233,6 +257,7 @@ class CoupGame:
             if ind <= self.currentPlayer:
                 # to offset adding 1
                 self.currentPlayer -= 1
+        return lostCard
 
     # return true if you CAN'T steal at all
     def noSteal(self):
@@ -312,11 +337,11 @@ if __name__ == "__main__":
 
     game.addPlayer(player0)
     game.addPlayer(player1)
-    game.addPlayer("Player 2")
+    #game.addPlayer("Player 2")
     #game.addPlayer("Player 3")
     #game.addPlayer("Player 4")
     #game.addPlayer("Player 5")
-    game.deal()
-    while (game.playerCount > 1):
-        game.takeTurn()
-    print(game.alive[0].name, "is the winner!")
+
+    rankings = game.run()
+
+    print(rankings[0].name, "is the winner!")

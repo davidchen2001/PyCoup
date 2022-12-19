@@ -26,13 +26,13 @@ class CoupPlayer:
                 user_input = int(user_input)
                 assert (user_input < len(self.cards))
                 assert (user_input >= 0)
-                chosen = user_input
-                break
+                chosen = self.cards[user_input]
+                return chosen
 
             except:
                 print("------- Invalid input received.")
         
-        return chosen
+        
         
 
     def lose_card(self):
