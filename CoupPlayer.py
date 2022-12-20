@@ -102,6 +102,49 @@ class CoupPlayer:
             return([ACTION_ASS, ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR, ACTION_COU])
         else:
             return([ACTION_COU])
+    
+    def getPossibleTruthfulActions(self):
+        actions = []
+        actions.append(ACTION_TAX)
+        actions.append(ACTION_INC)
+        actions.append(ACTION_FOR)
+
+        if self.coins < 3:
+
+            if self.cards[0] == CARD_CAPT:
+                actions.append(ACTION_STL)
+
+            if self.cards[0] == CARD_AMBR:
+                actions.append(ACTION_EXC)
+
+        elif self.coins < 7:
+
+            if self.cards[0] == CARD_CAPT:
+                actions.append(ACTION_STL)
+            
+            if self.cards[0] == CARD_ASSN:
+                actions.append(ACTION_ASS)
+            
+            if self.cards[0] == CARD_AMBR:
+                actions.append(ACTION_EXC)
+
+        elif self.coins < 10:
+            
+            if self.cards[0] == CARD_CAPT:
+                actions.append(ACTION_STL)
+            
+            if self.cards[0] == CARD_ASSN:
+                actions.append(ACTION_ASS)
+            
+            if self.cards[0] == CARD_AMBR:
+                actions.append(ACTION_EXC)
+            
+            actions.append(ACTION_COU)
+
+        else:
+            actions.append(ACTION_COU)
+        
+        return actions
 
     def getAction(self, possibleActions) -> int:
         #how will we ensure player knows game state?
