@@ -32,66 +32,6 @@ def longTermStrategy(player, actions, game):
 
     return bestAction
 
-
-def potentialToWin(player, players, game):
-
-    totalPotential = 0
-    totalAgentCoinsToKillPotential = 0
-
-    for p in players:
-        if player != p and p.getIsPlayer() == True:
-            getCoinsPotential = calculateCoinsPotential(p, game)
-            playerCoinsToKillPotential = coinsToKillPotential(p, player, game)
-
-            #1 represents number of active cards. It will be 1 due to endgame scenario
-            playerPotential = 1 * (p.getCoins() + getCoinsPotential)/playerCoinsToKillPotential
-            totalPotential += playerPotential
-
-            agentPlayerCoinToKillPotential = coinsToKillPotential(player, p, game)
-            totalAgentCoinsToKillPotential += agentPlayerCoinToKillPotential
-    
-    agentCoinPotential = calculateCoinsPotential(player, game)
-    agentCoinsToKillPotential = totalAgentCoinsToKillPotential/(len(players))
-    agentPotential = 1 * (player.getCoins() + agentCoinPotential)/agentCoinsToKillPotential
-    totalPotential += agentPotential
-
-    return agentPotential/totalPotential
-
-def calculateCoinsPotential(player, players, game):
-    incomeProb = 1 #No player can block this action
-    foreignAidProb = calculateActionSuccessProbability(player, ACTION_FOR, game)
-    taxProb = calculateActionSuccessProbability(player, ACTION_TAX, game)
-    stealProb = calculateActionSuccessProbability(player, ACTION_STL, game)
-
-    gettingStolenProb = 0
-
-    for p in players:
-        if p != player and p.getIsPlaying() == True:
-            stolenProb = probabilityGetStolenFrom(player, p, game)
-            gettingStolenProb += stolenProb
-
-    return 3 * taxProb + 2* foreignAidProb + 1 * incomeProb + 2 *stealProb - 2 *gettingStolenProb
-
-def coinsToKillPotential(player, game):
-    assassinateProb = calculateActionSuccessProbability(player, ACTION_ASS, game)
-    coinsToKill = 3 * assassinateProb
-    return coinsToKill
-
-#Only for changing cards
-def generateNextCardAction(player, players, game):
-    availableActions = player.getPossibleActions()
-    bestUtility = -2
-    bestAction = 0
-
-    for action in availableActions:
-        #outcome = player.generateCardOutcome(action) #Need to implement hypothetical perform card action that doesn't actually change game state
-        actionUtility = potentialToWin(player, players, game)
-        if actionUtility > bestUtility:
-            bestUtility = actionUtility
-            bestAction = action
-    
-    return bestAction
-
 def calculateActionSuccessProbability(player, action, game):
     playerRoles = player.getHandString()
     remainingCardsNum = game.getNumCardsRemaining()
@@ -237,22 +177,6 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
         probability = remainingAmbassador/remainingCardsNum
         return probability
 
-def probabilityGetStolenFrom(player, opponent, game):
-    #player steals from opponent
-
-    #Probability that you are a ambassador/captain
-    remainingCardsNum = game.getNumCardsRemaining()
-    removedCards = game.getCardsRemoved()
-
-    remainingCaptains = 5 - removedCards[CARD_CAPT]
-    remainingAmbassador = 5 - removedCards[CARD_AMBR]
-
-    probability = (remainingCaptains + remainingAmbassador)/remainingCardsNum
-    return probability
-
-def probabilityOutcome(player):
-    return 1/player.getPossibleActions()
-
 def shortTermStrategy(player, actions, game):
     utilityMap = {}
     maxUtility = 0
@@ -292,3 +216,4 @@ def successfulUtilityFunction(action):
         utility = 3/10
     
     return utility
+    
