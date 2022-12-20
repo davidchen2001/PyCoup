@@ -1,6 +1,38 @@
 from CoupActions import *
 from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CONT, CARD_CAPT, CARD_DUKE
 
+def longTermNonTruthfulStrategy(player, game):
+    actions = player.getPossibleActions()
+    return longTermStrategy(player, actions, game)
+
+def longTermTruthfulStrategy(player, game):
+    actions = player.getPossibleTruthfulActions()
+    return longTermStrategy(player, actions, game)
+
+def longTermStrategy(player, actions, game):
+    utilityMap = {}
+    maxUtility = 0
+
+    for i in range(len(actions)):
+
+        #Find each outcome that could come from each action
+        #Find utility of each outcome
+        #Find probability of each outcome happening
+        outcomes = game.generatePossibleOutcomes(player, actions[i], game)
+
+        utilityMap[actions[i]] = outcomes[actions[i]]
+        if maxUtility < outcomes[actions[i]]:
+            maxUtility = outcomes[actions[i]]
+    
+    bestAction = actions[0]
+
+    for key in utilityMap:
+        if utilityMap[key] == maxUtility:
+            bestAction = key
+
+    return bestAction
+
+
 def potentialToWin(player, players, game):
 
     totalPotential = 0
@@ -45,28 +77,14 @@ def coinsToKillPotential(player, game):
     coinsToKill = 3 * assassinateProb
     return coinsToKill
 
-def generateNextStrategy(player, game):
-    availableActions = player.getPossibleActions()
-    regretForNotPlayingActions = {}
-
-    for action in availableActions:
-        generalStratUtility = 0
-        actionsUtility = 0
-
-        possibleOutcomes = game.generatePossibleOutcomes(action) #Need to implement
-
-        #for outcome in possibleOutcomes:
-            #utility += 
-
-    return 0
-
+#Only for changing cards
 def generateNextCardAction(player, players, game):
-    availableActions = player.getPossibleActions() #Need to implement a version of truthful vs non-truthful player
+    availableActions = player.getPossibleActions()
     bestUtility = -2
     bestAction = 0
 
     for action in availableActions:
-        outcome = player.generateCardOutcome(action) #Need to implement hypothetical perform card action that doesn't actually change game state
+        #outcome = player.generateCardOutcome(action) #Need to implement hypothetical perform card action that doesn't actually change game state
         actionUtility = potentialToWin(player, players, game)
         if actionUtility > bestUtility:
             bestUtility = actionUtility
@@ -241,12 +259,7 @@ def shortTermStrategy(player, actions, game):
 
     for i in range(len(actions)):
         probability = calculateShortTermActionSuccessProbability(player, actions[i], actions, game)
-        utility = 1
-        
-        if actions[i] == ACTION_FOR or actions[i] == ACTION_STL:
-            utility = 2/10
-        elif actions[i] == ACTION_TAX:
-            utility = 3/10
+        utility = successfulUtilityFunction(actions[i])
 
         utility *= probability
 
@@ -269,3 +282,13 @@ def shortTermNonTruthfulStrategy(player, game):
 def shortTermTruthfulStrategy(player, game):
     actions = player.getTruthfulActions()
     return shortTermStrategy(player, actions, game)
+
+def successfulUtilityFunction(action):
+    utility = 1
+        
+    if action == ACTION_FOR or action == ACTION_STL:
+        utility = 2/10
+    elif action == ACTION_TAX:
+        utility = 3/10
+    
+    return utility

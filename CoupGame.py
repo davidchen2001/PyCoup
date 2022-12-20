@@ -4,6 +4,7 @@ from CoupDeck import *
 from CoupPlayer import CoupPlayer
 from CoupHistory import *
 import math
+from CoupStrategy import successfulUtilityFunction, calculateActionSuccessProbability
 
 class CoupGame:
     ''' 
@@ -387,23 +388,92 @@ class CoupGame:
     def getCardsRemoved(self):
         return self.cardsRemoved
     
-    def generatePossibleOutcomes(self, action):
+    def generatePossibleOutcomes(self, player, action, actions):
         outcomes = {}
 
-        #if action == ACTION_ASS:
+        if action in actions:
+            #Truthful
+            
+            #If challenge happens - you get 1 utility because other player will die
+            utility = successfulUtilityFunction(action)
+            expectedUtility = utility + 1 * (1-calculateActionSuccessProbability(player,action,self))
+            outcomes[action] = expectedUtility
+
+        elif action == ACTION_ASS:
+
+            #Non-truthful
+
+            #If challenge does not happen, I get utility of the action, unless assassination gets blocked (0 utility)
+            utility = successfulUtilityFunction(action)
+
+            probability = calculateActionSuccessProbability(player, action, self)
+
+            #If challenge does happen, I lose a life
+            expectedUtility = (-1) * (1-probability) + utility * probability
+            outcomes[action] = expectedUtility
         
-        #elif action == ACTION_EXC:
+        elif action == ACTION_EXC:
 
-        #elif action == ACTION_STL:
+            #Non-truthful
 
-        #elif action == ACTION_TAX:
+            #If challenge does not happen, I get utility of the action
+            utility = successfulUtilityFunction(action)
 
-        #elif action == ACTION_INC:
+            probability = calculateActionSuccessProbability(player, action, self)
+
+            #If challenge does happen, I lose a life
+            expectedUtility = (-1) * (1-probability) + utility * probability
+            outcomes[action] = expectedUtility
+
+        elif action == ACTION_STL:
+
+            #Non-truthful
+
+            #If challenge does not happen, I get utility of the action
+            utility = successfulUtilityFunction(action)
+
+            probability = calculateActionSuccessProbability(player, action, self)
+
+            #If challenge does happen, I lose a life
+            expectedUtility = (-1) * (1-probability) + utility * probability + 1 * probability
+            outcomes[action] = expectedUtility
+
+        elif action == ACTION_TAX:
+
+            #If challenge does not happen, I get utility of the action
+            utility = successfulUtilityFunction(action)
+
+            probability = calculateActionSuccessProbability(player, action, self)
+
+            #If challenge does happen, I lose a life
+            expectedUtility = (-1) * (1-probability) + utility * probability
+            outcomes[action] = expectedUtility
+
+        elif action == ACTION_INC:
+
+            #I can't be challenged for this
+
+            #If challenge does not happen, I get utility of the action
+            utility = successfulUtilityFunction(action)
+
+            probability = calculateActionSuccessProbability(player, action, self)
+            expectedUtility = utility * probability
+            outcomes[action] = expectedUtility
         
-        #elif action == ACTION_FOR:
+        elif action == ACTION_FOR:
 
-        #else:
+            #If challenge does not happen, I get utility of the action
+            utility = successfulUtilityFunction(action)
+
+            probability = calculateActionSuccessProbability(player, action, self)
+
+            #If challenge does happen, I lose a life
+            expectedUtility = (-1) * (1-probability) + utility * probability + 1 * probability
+            outcomes[action] = expectedUtility
+
+        else:
             #Coup
+            outcomes[action] = 1
 
 
         return outcomes
