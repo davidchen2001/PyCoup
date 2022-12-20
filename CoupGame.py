@@ -386,6 +386,27 @@ class CoupGame:
     
     def getCardsRemoved(self):
         return self.cardsRemoved
+    
+    def generatePossibleOutcomes(self, action):
+        outcomes = {}
+
+        #if action == ACTION_ASS:
+        
+        #elif action == ACTION_EXC:
+
+        #elif action == ACTION_STL:
+
+        #elif action == ACTION_TAX:
+
+        #elif action == ACTION_INC:
+        
+        #elif action == ACTION_FOR:
+
+        #else:
+            #Coup
+
+
+        return outcomes
             
 
 if __name__ == "__main__":
