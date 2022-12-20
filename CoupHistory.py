@@ -93,6 +93,6 @@ class CoupHistory:
         self.turns[self.currentTurn].blockChallengerId = blockChallengerId
         self.turns[self.currentTurn].blockChallengeSuccessful = blockChallengeSuccess
 
-        self.turns[self.currentTurn].actionSuccessful = not blockChallengeSuccess
+        self.turns[self.currentTurn].actionSuccessful = blockChallengeSuccess
 
         #print(self.turns[self.currentTurn])

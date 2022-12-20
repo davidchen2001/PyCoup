@@ -119,9 +119,9 @@ class CoupGame:
                     # challenge block
                     challenger = self.challenge(card, blocker)
                     if challenger:
-                        truthfulBlock = not self.resolveChallenge(challenger, blocker, card)
-                        self.history.logBlockChallenge(challenger.id, not truthfulBlock)
-                        actionWentThrough = not truthfulBlock
+                        truthful = self.resolveChallenge(challenger, blocker, card)
+                        self.history.logBlockChallenge(challenger.id, (not truthful))
+                        actionWentThrough = not truthful
 
         # execute
         if actionWentThrough:
@@ -180,9 +180,19 @@ class CoupGame:
         toChoose.append(self.deck.draw())
         toChoose.append(self.deck.draw())
         newHand = player.exchange(toChoose)
+        assert (len(newHand) == handSize)
+        
+        if(len(toChoose) > 2):
+            # if toChoose was not altered in the player's exchange
+            # must remove player's chosen cards from toChoose
+            assert (len(toChoose) == (2 + handSize))
+
+            for card in newHand:
+                if card in toChoose:
+                    toChoose.pop(toChoose.index(card))
+
         assert len(toChoose) == 2
         self.deck.add(toChoose[0], toChoose[1])
-        assert (len(newHand) == handSize)
         player.cards = newHand
 
         # player mentioned so that x assassinated y could be displayed
@@ -289,7 +299,7 @@ class CoupGame:
 
             self.history.currentCoins[player.id] = -1
             self.history.currentOrder.pop(self.currentPlayer)
-            print(self.history.currentOrder)
+            #print(self.history.currentOrder)
 
             self.dead.append(self.alive.pop(ind))
             if ind <= self.currentPlayer:
