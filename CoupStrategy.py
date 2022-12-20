@@ -3,7 +3,6 @@ from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CONT, CARD_CAPT, CARD
 
 
 def potentialToWin(player, players, game):
-    #game parameter?
 
     totalPotential = 0
     totalAgentCoinsToKillPotential = 0
@@ -42,8 +41,10 @@ def calculateCoinsPotential(player, players, game):
 
     return 3 * taxProb + 2* foreignAidProb + 1 * incomeProb + 2 *stealProb - 2 *gettingStolenProb
 
-def coinsToKillPotential(player, targetPlayer, strategy):
-    return 0
+def coinsToKillPotential(player, game):
+    assassinateProb = calculateActionSuccessProbability(player, ACTION_ASS, game)
+    coinsToKill = 3 * assassinateProb
+    return coinsToKill
 
 def generateNextStrategy(player, game):
     return 0
@@ -114,6 +115,18 @@ def calculateActionSuccessProbability(player, action, game):
             probability = 1-probability
         
         return probability
+    elif action == ACTION_ASS:
+        #Probability that a player is not contessa - and that will be when assassination is successful
+
+        remainingContessa = 5 - removedCards[CARD_CONT]
+
+        probability = remainingContessa/remainingCardsNum
+
+        return 1-probability
+    
+    elif action == ACTION_COU:
+        #Assuming player has enough money, coup should always be a valid option
+        return 1
 
 def probabilityGetStolenFrom(player, opponent, game):
     #player steals from opponent
@@ -127,10 +140,3 @@ def probabilityGetStolenFrom(player, opponent, game):
 
     probability = (remainingCaptains + remainingAmbassador)/remainingCardsNum
     return probability
-    
-
-
-
-
-        
-
