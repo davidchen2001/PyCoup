@@ -383,6 +383,9 @@ class CoupGame:
         for i in range(self.cardsRemoved):
             remaining -= self.cardsRemoved[i]
         return remaining
+    
+    def getCardsRemoved(self):
+        return self.cardsRemoved
             
 
 if __name__ == "__main__":
