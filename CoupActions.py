@@ -6,7 +6,8 @@ actionToString = {
     5: 'Income',
     6: 'Foreign Aid',
     7: 'Coup',
-    8: 'Challenge'}
+    8: 'Challenge',
+    9: 'Block'}
 
 ACTION_ASS = 1
 ACTION_EXC = 2
@@ -16,4 +17,4 @@ ACTION_INC = 5
 ACTION_FOR = 6
 ACTION_COU = 7
 ACTION_CHA = 8
-
+ACTION_BLO = 9

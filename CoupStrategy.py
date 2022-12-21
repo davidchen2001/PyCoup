@@ -297,6 +297,116 @@ def calculateBlockSuccess(player, action, game):
 
     return probability
 
+def calculateBlockUtility(player, action, game):
+
+    #Successful Block
+    successUtility = 0
+    failUtility = 0
+
+    card = player.getCards()[0]
+
+    if action == ACTION_ASS:
+
+        if card != CARD_CONT:
+            failUtility = -100
+            successUtility = 1
+        else:
+            failUtility = 0
+
+    elif action == ACTION_FOR:
+
+        successUtility = 2
+
+        if card != CARD_DUKE:
+            failUtility = -100
+
+        else: 
+            failUtility = 0
+
+    elif action == ACTION_STL:
+
+        successUtility = 3
+
+        if card == CARD_CAPT or card == CARD_AMBR:
 
 
+            failUtility = 0
+        else:
+
+            failUtility = -100
+
+    probability = calculateBlockSuccess(player, action, game)
+
+    failUtility = -100
+
+    expectedSuccess = successUtility * probability
+    expectedFail = failUtility * (1-probability)
+
+    if expectedSuccess > expectedFail and expectedSuccess > 0:
+        return ACTION_BLO
+    else:
+        return ACTION_INC
+
+def calculateChallengeSuccess(opponent, challenger, action, game):
+
+    #What is the probability the opponent's action will be successful?
+    initialProbability =  calculateActionSuccessProbability(opponent, action, game)
+    probability = 1-initialProbability
+
+    remainingCardsNum = game.getNumCardsRemaining()
+    removedCards = game.getCardsRemoved()
+
+    challengerCards = challenger.getCards()
+    card = challengerCards[0]
+
+    if action == ACTION_ASS and card == CARD_ASSN:
+        probability = (STARTING_CARDS_NUM - removedCards[CARD_ASSN]-1)/remainingCardsNum
+    elif action == ACTION_EXC and card == CARD_AMBR:
+        probability = (STARTING_CARDS_NUM - removedCards[CARD_AMBR]-1)/remainingCardsNum
+    elif action == ACTION_STL and card == CARD_CAPT:
+        probability = (STARTING_CARDS_NUM - removedCards[CARD_CAPT]-1)/remainingCardsNum
+    elif action == ACTION_TAX and card == CARD_DUKE:
+        probability = (STARTING_CARDS_NUM - removedCards[CARD_DUKE]-1)/remainingCardsNum
+    elif action == ACTION_BLO and card == CARD_CONT or card == CARD_DUKE or card == CARD_CAPT or card == CARD_AMBR:
     
+
+        #Block Foreign Aid
+        if card == CARD_DUKE:
+            #What are the odds the player is not Duke and if I know I am Duke?
+
+            remainingDukes = STARTING_CARDS_NUM - removedCards[CARD_DUKE] - 1
+            probability = remainingDukes/remainingCardsNum
+
+        #Block Assassination
+        elif card == CARD_CONT:
+            #What are the odds the player is not Contessa and if I know I am Contessa?
+
+            remainingContessa = STARTING_CARDS_NUM - removedCards[CARD_CONT] - 1
+            probability = remainingContessa/remainingCardsNum
+
+        #Block Stealing
+        elif card == CARD_CAPT or card == CARD_AMBR:
+            #What are the odds the player is not Ambassador or Captain if I know I am one of these roles?
+
+            remainingCaptains = STARTING_CARDS_NUM - removedCards[CARD_CAPT]
+            remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
+
+            
+            probability = (remainingCaptains + remainingAmbassador - 1)/remainingCardsNum
+
+    return probability
+
+def calculateChallengeUtility(opponent, challenger, action, game):
+
+    successUtility = 100
+    failUtility = -100
+
+    probability = calculateChallengeSuccess(opponent, challenger, action, game)
+
+    expectedSuccess = successUtility * probability
+    expectedFail = failUtility * (1-probability)
+
+    if expectedSuccess > expectedFail and expectedSuccess > 0:
+        return ACTION_CHA
+    else:
+        return ACTION_INC
