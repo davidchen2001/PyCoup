@@ -48,6 +48,7 @@ class CoupGame:
             return
         
         self.alive[self.playerCount].attachHistory(self.history)
+        self.alive[self.playerCount].attachGame(self)
         
         self.history.currentOrder.append(playerId)
         self.history.currentCoins[playerId] = 2
@@ -304,7 +305,7 @@ class CoupGame:
         lostCard = player.lose_card()
         self.cardsRemoved[lostCard] += 1
         if not player.isAlive:
-            print(player.name, "has lost!")
+            print(player.name, "has lost a", GAMECARDS[lostCard] , "and is OUT!")
             self.playerCount -= 1
             ind = self.alive.index(player)
 
@@ -316,6 +317,9 @@ class CoupGame:
             if ind <= self.currentPlayer:
                 # to offset adding 1
                 self.currentPlayer -= 1
+        else:
+            print(player.name, "has lost a", GAMECARDS[lostCard])
+
         return lostCard
 
     # return true if you CAN'T steal at all

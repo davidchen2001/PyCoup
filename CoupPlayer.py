@@ -1,6 +1,7 @@
 from CoupActions import *
 from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CAPT, CARD_CONT, CARD_DUKE
 from CoupHistory import *
+from CoupGame import CoupGame
 
 class CoupPlayer:
     next_id = 100
@@ -18,6 +19,7 @@ class CoupPlayer:
         self.isAlive = True
         self.isPlaying = False
         self.history = None
+        self.game = None
         
     def getIsPlaying(self):
         return self.isPlaying
@@ -30,6 +32,11 @@ class CoupPlayer:
 
     def die(self):
         self.isAlive = False
+
+    # add CoupGame reference to player
+    def attachGame(self, game):
+        assert isinstance(game, CoupGame)
+        self.game = game
 
     # add CoupHistory reference to player
     def attachHistory(self, history):
@@ -89,7 +96,7 @@ class CoupPlayer:
         else:
             if self.cards[0] == -2:
                 assert self.cards[1] == -2
-                
+
             output = []
             for i in range(self.numCards):
                 if (self.cards[i] >= 0):
@@ -109,47 +116,18 @@ class CoupPlayer:
             return([ACTION_COU])
     
     def getPossibleTruthfulActions(self):
-        actions = []
-        actions.append(ACTION_TAX)
-        actions.append(ACTION_INC)
-        actions.append(ACTION_FOR)
+        actions = self.getPossibleActions()
 
-        if self.coins < 3:
+        if (ACTION_EXC in actions) and (CARD_AMBR not in self.cards):
+            actions.remove(ACTION_EXC)
+        if (ACTION_ASS in actions) and (CARD_ASSN not in self.cards):
+            actions.remove(ACTION_ASS)               
+        if (ACTION_STL in actions) and (CARD_CAPT not in self.cards):
+            actions.remove(ACTION_STL)
+        if (ACTION_TAX in actions) and (CARD_DUKE not in self.cards):
+            actions.remove(ACTION_TAX)
 
-            if self.cards[0] == CARD_CAPT:
-                actions.append(ACTION_STL)
-
-            if self.cards[0] == CARD_AMBR:
-                actions.append(ACTION_EXC)
-
-        elif self.coins < 7:
-
-            if self.cards[0] == CARD_CAPT:
-                actions.append(ACTION_STL)
-            
-            if self.cards[0] == CARD_ASSN:
-                actions.append(ACTION_ASS)
-            
-            if self.cards[0] == CARD_AMBR:
-                actions.append(ACTION_EXC)
-
-        elif self.coins < 10:
-            
-            if self.cards[0] == CARD_CAPT:
-                actions.append(ACTION_STL)
-            
-            if self.cards[0] == CARD_ASSN:
-                actions.append(ACTION_ASS)
-            
-            if self.cards[0] == CARD_AMBR:
-                actions.append(ACTION_EXC)
-            
-            actions.append(ACTION_COU)
-
-        else:
-            actions.append(ACTION_COU)
-        
-        return actions
+        return actions.sort()
 
     def getAction(self, possibleActions) -> int:
         #how will we ensure player knows game state?
