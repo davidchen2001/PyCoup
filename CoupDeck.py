@@ -16,6 +16,7 @@ class CoupDeck:
         random.shuffle(self.deck)
 
     def draw(self):
+        assert len(self.deck) > 0
         return self.deck.pop()
 
     def add(self, card1, card2 = -1):

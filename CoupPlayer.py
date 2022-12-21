@@ -3,7 +3,7 @@ from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CAPT, CARD_CONT, CARD
 from CoupHistory import *
 
 class CoupPlayer:
-    next_id = 0
+    next_id = 100
 
     def __init__(self, name):
         self.name = name
@@ -14,7 +14,7 @@ class CoupPlayer:
     def newGame(self):
         self.coins = 2
         self.cards = [-2, -2]
-        self.numCards = 2
+        self.numCards = 0
         self.isAlive = True
         self.isPlaying = False
         self.history = None
@@ -87,10 +87,15 @@ class CoupPlayer:
         if ((self.isAlive == False) or (self.numCards == 0)):
             return "No cards"
         else:
+            if self.cards[0] == -2:
+                assert self.cards[1] == -2
+                
             output = []
             for i in range(self.numCards):
                 if (self.cards[i] >= 0):
                     output.append(GAMECARDS[self.cards[i]])
+                else:
+                    print("Card at index x is:", i, self.cards[i])
             return str(output)
 
     def getPossibleActions(self):
