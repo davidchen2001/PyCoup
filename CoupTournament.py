@@ -3,6 +3,12 @@ from CoupGame import CoupGame
 import itertools
 import random
 from datetime import datetime
+
+from Agents.BluffingLongVisionAgent import *
+from Agents.BluffingShortVisionAgent import *
+from Agents.TruthfulLongVisionAgent import *
+from Agents.TruthfulShortVisionAgent import *
+
 UTILITY = [8,4,2,1]
 FILE_CSV = "./Results/" + datetime.now().strftime("%b%d_%H%M") + ".csv"
 PLAYERS_PER_GAME = 4

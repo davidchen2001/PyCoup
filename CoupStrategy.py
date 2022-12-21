@@ -41,17 +41,22 @@ def calculateActionSuccessProbability(player, action, game):
     
     probability = 0
 
-    if action == ACTION_FOR:
+        
+    if action in [ACTION_INC, ACTION_COU]:
+        #Income and Coup always have 100% probability
+        #Assuming player has enough money, coup should always be a valid option
+        return 1
+
+    elif action == ACTION_FOR:
         #Duke Probability - Dukes don't lose anything from not blocking, so they should block
 
         remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
-        if playerRoles == GAMECARDS[CARD_DUKE]:
-            #One less Duke in Deck
-            probability = (remainingDukes-1)/remainingCardsNum
+        # subtract number of dukes in player's hand
+        myDukeCount = playerRoles.count(GAMECARDS[CARD_DUKE])
+        remainingDukes -= myDukeCount
 
-        else:
-            probability = remainingDukes/remainingCardsNum
+        probability = remainingDukes/remainingCardsNum
         
         #Return probability that you won't be blocked
         return 1-probability
@@ -62,7 +67,7 @@ def calculateActionSuccessProbability(player, action, game):
 
         remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
-        if playerRoles == GAMECARDS[CARD_DUKE]:
+        if GAMECARDS[CARD_DUKE] in playerRoles:
             probability = 1
         else:
             probability = remainingDukes/remainingCardsNum
@@ -71,19 +76,17 @@ def calculateActionSuccessProbability(player, action, game):
     
     elif action == ACTION_STL:
 
-        #Probability that player is a captain and another captain and ambassador doesn't block it
+        #Probability that player is a captain and another captain/ambassador doesn't block it
 
         remainingCaptains = STARTING_CARDS_NUM - removedCards[CARD_CAPT]
         remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
 
-        if playerRoles == GAMECARDS[CARD_CAPT]:
-            
-            probability = (remainingCaptains-1 + remainingAmbassador)/remainingCardsNum
-            probability = 1-probability
-        
-        else:
-            probability = (remainingCaptains + remainingAmbassador)/remainingCardsNum
-            probability = 1-probability
+        # count how many captains are in current player's hand
+        myCaptCount = playerRoles.count(GAMECARDS[CARD_CAPT])
+        remainingCaptains -= myCaptCount            
+
+        probability = (remainingCaptains + remainingAmbassador)/remainingCardsNum
+        probability = 1-probability
         
         return probability
     elif action == ACTION_ASS:
@@ -94,10 +97,7 @@ def calculateActionSuccessProbability(player, action, game):
         probability = remainingContessa/remainingCardsNum
 
         return 1-probability
-    
-    elif action == ACTION_COU:
-        #Assuming player has enough money, coup should always be a valid option
-        return 1
+
     elif action == ACTION_EXC:
         #Probability that a player has ambassador
         remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
@@ -120,12 +120,11 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
 
         remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
-        if playerRoles == GAMECARDS[CARD_DUKE]:
-            #One less Duke in Deck
-            probability = (remainingDukes-1)/remainingCardsNum
+        # subtract number of dukes in player's hand
+        myDukeCount = playerRoles.count(GAMECARDS[CARD_DUKE])
+        remainingDukes -= myDukeCount
 
-        else:
-            probability = remainingDukes/remainingCardsNum
+        probability = remainingDukes/remainingCardsNum
         
         #Return probability that you won't be blocked
         return 1-probability
@@ -136,7 +135,7 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
 
         remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
-        if playerRoles == GAMECARDS[CARD_DUKE]:
+        if GAMECARDS[CARD_DUKE] in playerRoles:
             probability = 1
         else:
             probability = remainingDukes/remainingCardsNum
@@ -169,10 +168,12 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
 
         return 1-probability
     
-    elif action == ACTION_COU:
+    elif action in [ACTION_INC, ACTION_COU]:
+        #Income and Coup always have 100% probability
         #Assuming player has enough money, coup should always be a valid option
         return 1
     elif action == ACTION_EXC:
+
         #Probability that a player has ambassador
         remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
 
@@ -211,8 +212,10 @@ def shortTermTruthfulStrategy(player, game):
 
 def successfulUtilityFunction(action):
     utility = 1
-        
-    if action == ACTION_FOR or action == ACTION_STL:
+
+    if action == ACTION_INC:
+        utility = 1/10
+    elif action == ACTION_FOR or action == ACTION_STL:
         utility = 2/10
     elif action == ACTION_TAX:
         utility = 3/10
