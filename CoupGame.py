@@ -66,6 +66,7 @@ class CoupGame:
             for i in range(len(self.alive)):
                 drawn = self.deck.draw()
                 self.cardsRemoved[drawn] += 1
+                print("Endgame: removing card", GAMECARDS[drawn])
 
 
     # runs the game, returns ranking of players from winner to worst
@@ -344,10 +345,10 @@ class CoupGame:
             return self.askForTarget(True)
         return None
 
-    def displayTargets(self, listOfPlayers):
+    def displayTargets(self, listOfPlayers, idToIndex):
         print("------- Possible targets: ")
         for i in range(len(listOfPlayers)):
-            print("------- " + str(listOfPlayers[i]) + " - " + self.alive[listOfPlayers[i]].name)
+            print("------- " + str(listOfPlayers[i]) + " - " + self.alive[idToIndex[listOfPlayers[i]]].name)
 
     def displayAction(self, action, target):
         output = self.alive[self.currentPlayer].name
@@ -384,13 +385,16 @@ class CoupGame:
     # returns a player object, requires input
     def askForTarget(self, steal = False) -> CoupPlayer:
         possibleTargets = []
+        idToIndex = {}
+
         for i in range(self.playerCount):
             if (i != self.currentPlayer) and (not steal or self.alive[i].coins > 0):
-                possibleTargets.append(i)
-        self.displayTargets(possibleTargets)
+                possibleTargets.append(self.alive[i].id)
+                idToIndex[self.alive[i].id] = i
+        self.displayTargets(possibleTargets, idToIndex)
 
         user_input = self.alive[self.currentPlayer].getTarget(possibleTargets)
-        return self.alive[user_input]
+        return self.alive[idToIndex[user_input]]
     
     def getNumCardsRemaining(self):
         remaining = self.NUM_DECK

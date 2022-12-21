@@ -1,8 +1,10 @@
-from .. import CoupPlayer, CoupStrategy, CoupGame
+from CoupPlayer import CoupPlayer
+from CoupGame import CoupGame
+from CoupStrategy import *
 
 class BluffingLongVisionAgent(CoupPlayer):
     def getAction(self, possibleActions) -> int:
-        return CoupStrategy.longTermNonTruthfulStrategy(self, self.game)
+        return longTermNonTruthfulStrategy(self, self.game)
 
     def getTarget(self, possibleTargets) -> int:
         raise NotImplementedError()

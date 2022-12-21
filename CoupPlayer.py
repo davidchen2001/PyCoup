@@ -2,7 +2,7 @@ from CoupActions import *
 from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CAPT, CARD_CONT, CARD_DUKE
 from CoupHistory import *
 
-class CoupPlayer:
+class CoupPlayer(object):
     next_id = 100
 
     def __init__(self, name):
@@ -253,7 +253,8 @@ class CoupPlayer:
                 print("------- Invalid input received.")
         return chosenCards
 
-
+    def automatedExchange(self, possibleCards):
+        pass
 
 if __name__ == "__main__":
     player1 = CoupPlayer("Player 1");

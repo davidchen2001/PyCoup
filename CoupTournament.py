@@ -94,6 +94,8 @@ class CoupTournament:
             self.gamesPlayed += 1
 
         print("Utilities:", self.utils)
+        for id in self.players:
+            print(str(id) + ": " + self.players[id].name)
 
     def playRound(self):
         current_matchup_ids = self.schedule[self.gamesPlayed]
