@@ -3,6 +3,9 @@ from CoupGame import CoupGame
 from CoupStrategy import *
 
 class TruthfulShortVisionAgent(CoupPlayer):
+    def __init__(self):
+        super().__init__("Truthful-Short")
+
     def getAction(self, possibleActions) -> int:
         return shortTermTruthfulStrategy(self, self.game)
 

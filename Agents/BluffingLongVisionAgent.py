@@ -3,6 +3,9 @@ from CoupGame import CoupGame
 from CoupStrategy import *
 
 class BluffingLongVisionAgent(CoupPlayer):
+    def __init__(self):
+        super().__init__("Bluffing-Long")
+
     def getAction(self, possibleActions) -> int:
         return longTermNonTruthfulStrategy(self, self.game)
 
