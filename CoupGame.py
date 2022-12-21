@@ -399,7 +399,7 @@ class CoupGame:
     def getNumCardsRemaining(self):
         remaining = self.NUM_DECK
 
-        for i in range(self.cardsRemoved):
+        for i in range(len(self.cardsRemoved)):
             remaining -= self.cardsRemoved[i]
         return remaining
     
