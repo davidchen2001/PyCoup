@@ -1,7 +1,6 @@
 from CoupActions import *
 from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CAPT, CARD_CONT, CARD_DUKE
 from CoupHistory import *
-from CoupGame import CoupGame
 
 class CoupPlayer:
     next_id = 100
@@ -35,7 +34,6 @@ class CoupPlayer:
 
     # add CoupGame reference to player
     def attachGame(self, game):
-        assert isinstance(game, CoupGame)
         self.game = game
 
     # add CoupHistory reference to player
@@ -102,18 +100,25 @@ class CoupPlayer:
                 if (self.cards[i] >= 0):
                     output.append(GAMECARDS[self.cards[i]])
                 else:
-                    print("Card at index x is:", i, self.cards[i])
+                    print("Card at index x is:", i, self.cards[i], self.cards)
             return str(output)
 
     def getPossibleActions(self):
+        actions = []
         if self.coins < 3:
-            return([ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR])
+            actions = ([ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR])
         elif self.coins < 7:
-            return([ACTION_ASS, ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR])
+            actions = ([ACTION_ASS, ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR])
         elif self.coins < 10:
-            return([ACTION_ASS, ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR, ACTION_COU])
+            actions = ([ACTION_ASS, ACTION_EXC, ACTION_STL, ACTION_TAX, ACTION_INC, ACTION_FOR, ACTION_COU])
         else:
-            return([ACTION_COU])
+            actions = ([ACTION_COU])
+        
+        if (self.game.noSteal()):
+            # if it is not possible to steal (i.e. all players have 0 coins)
+            actions.remove(ACTION_STL)
+
+        return actions
     
     def getPossibleTruthfulActions(self):
         actions = self.getPossibleActions()
