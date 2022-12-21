@@ -2,7 +2,9 @@ from CoupPlayer import *
 from CoupGame import CoupGame
 import itertools
 import random
+from datetime import datetime
 UTILITY = [8,4,2,1]
+FILE_CSV = "./Results/" + datetime.now().strftime("%b%d_%H%M") + ".csv"
 PLAYERS_PER_GAME = 4
 
 
@@ -73,25 +75,69 @@ class CoupTournament:
         assert (leastPlayed + int(minGames * scheduleLeeway) >= mostPlayed)
 
         # COMMENT THIS OUT
+        print("***Trimming schedule to 2 games for debugging :)")
         schedule = schedule[:2]
 
         self.schedule = schedule
 
-'''
+
     def run(self):
-        current_matchup = self.schedule[self.gamesPlayed]
-        current_games
-        for id in current_matchup:
+        self.writeToCsv(["First", "Second", "Third", "Fourth"], new=True)
+        for i in range(len(self.schedule)):
+            self.playRound()
+            self.gamesPlayed += 1
 
-        playRound()
+        print("Utilities:", self.utils)
 
-    def playRound(self, player1, player2, player3, player4):
+    def playRound(self):
+        current_matchup_ids = self.schedule[self.gamesPlayed]
+        current_matchup = []
+        for id in current_matchup_ids:
+            current_matchup.append(self.players[id])
+        
+        game = CoupGame()
+        for player in current_matchup:
+            game.addPlayer(player)
+        
+        assert game.playerCount == PLAYERS_PER_GAME
 
-'''
+        rankings = game.run(endgame=True)
+        rankingsId = []
+        resultString = "GAME OVER: "
+        for i in range(PLAYERS_PER_GAME):
+            rankings[i].newGame()
+
+            self.utils[rankings[i].id] += UTILITY[i]
+            rankingsId.append(rankings[i].id)
+            
+            resultString += rankings[i].name
+            resultString += " "
+
+        print(resultString)
+        self.writeToCsv(rankingsId)
+
+    # store results to CSV file. 
+    # If the game is starting then wipe the file, otherwise append
+    def writeToCsv(self, data, new:bool = False):
+        mode = "a"
+        if (new):
+            mode = "w"
+
+        f = open(FILE_CSV, mode)
+        for i in range(len(data)):
+            f.write(str(data[i]))
+            if (i == len(data) - 1):
+                f.write("\n")
+            else:
+                f.write(",")
+
+        f.close()
+
+    
 
 if __name__ == "__main__":
     tournament = CoupTournament()
     tournament.createPlayers()
     tournament.createSchedule(100)
-
+    tournament.run()
 

@@ -53,17 +53,27 @@ class CoupGame:
         self.history.currentCoins[playerId] = 2
         self.playerCount += 1
 
-    def deal(self):
+    def deal(self, endgame=False):
         for i in range(self.playerCount):
             self.alive[i].cards[0] = self.deck.draw()
-            self.alive[i].cards[1] = self.deck.draw()
+            self.alive[i].numCards += 1
+            if (not endgame):
+                self.alive[i].cards[1] = self.deck.draw()
+                self.alive[i].numCards += 1
+
+        if endgame:
+            for i in range(len(self.alive)):
+                drawn = self.deck.draw()
+                self.cardsRemoved[drawn] += 1
+
 
     # runs the game, returns ranking of players from winner to worst
-    def run(self):
+    def run(self, endgame=False):
         if (self.playerCount <= 1):
             return None
 
-        self.deal()
+        self.deal(endgame)
+
         while (self.playerCount > 1):
             self.takeTurn()
 
@@ -274,9 +284,10 @@ class CoupGame:
         if (action in personChallenged.cards):
             # action codes correspond with card codes
             # Ex) ACTN_STL = 3 = CARD_CAPT
-            personChallenged.cards.remove(action)
+            index = personChallenged.cards.index(action)
+            #personChallenged.cards.remove(action)
             self.deck.add(action)
-            personChallenged.cards.append(self.deck.draw())
+            personChallenged.cards[index] = (self.deck.draw())
 
             lostCard = self.loseCard(challenger)
             truth = True
