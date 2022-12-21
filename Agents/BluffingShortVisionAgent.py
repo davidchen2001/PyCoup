@@ -17,4 +17,4 @@ class BluffingShortVisionAgent(CoupPlayer):
         raise NotImplementedError()
 
     def chooseLostCard(self):
-        raise NotImplementedError()
+        return self.cards[0]
