@@ -31,6 +31,9 @@ class CoupPlayer(object):
 
     def die(self):
         self.isAlive = False
+    
+    def getCards(self):
+        return self.cards
 
     # add CoupGame reference to player
     def attachGame(self, game):

@@ -234,9 +234,10 @@ def utilityGainFunction(action):
     elif action == ACTION_FOR:
         utility += 2
 
-    else:
+    elif action == ACTION_EXC:
         #Exchange
         utility = 0
+
     return utility
 
 def utilityLossFunction(action):
@@ -250,4 +251,52 @@ def utilityLossFunction(action):
     elif action == ACTION_STL:
         utility -= 2
 
+    elif action == ACTION_CHA:
+        utility -= 100
 
+def calculateBlockSuccess(player, action, game):
+    #Probability of success
+    
+    remainingCardsNum = game.getNumCardsRemaining()
+    removedCards = game.getCardsRemoved()
+
+    playerCards = player.getCards()
+    card = playerCards[0]
+
+    #Block Foreign Aid
+    if action == ACTION_FOR:
+        #What are the odds I have Duke?
+
+        remainingDukes = STARTING_CARDS_NUM - removedCards[CARD_DUKE]
+        if card == CARD_DUKE:
+            return 1
+        else:
+            probability = remainingDukes/remainingCardsNum
+
+    #Block Assassination
+    elif action == ACTION_ASS:
+        #What are the odds I have Contessa?
+
+        remainingContessa = STARTING_CARDS_NUM - removedCards[CARD_CONT]
+        if card == CARD_CONT:
+            return 1
+        else:
+            probability = remainingContessa/remainingCardsNum
+
+    #Block Stealing
+    elif action == ACTION_STL:
+        #What are the odds I am Ambassador or Captain?
+
+        remainingCaptains = STARTING_CARDS_NUM - removedCards[CARD_CAPT]
+        remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
+
+        if card == CARD_AMBR or card == CARD_CAPT:
+            return 1
+        else:
+            probability = (remainingCaptains + remainingAmbassador)/remainingCardsNum
+
+    return probability
+
+
+
+    
