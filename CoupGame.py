@@ -1,4 +1,3 @@
-from turtle import pos
 from CoupActions import *
 from CoupDeck import *
 from CoupPlayer import CoupPlayer

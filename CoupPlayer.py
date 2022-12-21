@@ -3,7 +3,7 @@ from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CAPT, CARD_CONT, CARD
 from CoupHistory import *
 
 class CoupPlayer:
-    next_id = 0
+    next_id = 100
 
     def __init__(self, name):
         self.name = name
