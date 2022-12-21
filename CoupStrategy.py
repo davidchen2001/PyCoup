@@ -1,6 +1,8 @@
 from CoupActions import *
 from CoupDeck import GAMECARDS, CARD_AMBR, CARD_ASSN, CARD_CONT, CARD_CAPT, CARD_DUKE
 
+STARTING_CARDS_NUM = 3
+
 def longTermNonTruthfulStrategy(player, game):
     actions = player.getPossibleActions()
     return longTermStrategy(player, actions, game)
@@ -42,7 +44,7 @@ def calculateActionSuccessProbability(player, action, game):
     if action == ACTION_FOR:
         #Duke Probability - Dukes don't lose anything from not blocking, so they should block
 
-        remainingDukes = 5-removedCards[CARD_DUKE]
+        remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
         if playerRoles == GAMECARDS[CARD_DUKE]:
             #One less Duke in Deck
@@ -58,7 +60,7 @@ def calculateActionSuccessProbability(player, action, game):
 
         #Duke Probability - Duke can get tax - 3 coins
 
-        remainingDukes = 5-removedCards[CARD_DUKE]
+        remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
         if playerRoles == GAMECARDS[CARD_DUKE]:
             probability = 1
@@ -71,8 +73,8 @@ def calculateActionSuccessProbability(player, action, game):
 
         #Probability that player is a captain and another captain and ambassador doesn't block it
 
-        remainingCaptains = 5 - removedCards[CARD_CAPT]
-        remainingAmbassador = 5 - removedCards[CARD_AMBR]
+        remainingCaptains = STARTING_CARDS_NUM - removedCards[CARD_CAPT]
+        remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
 
         if playerRoles == GAMECARDS[CARD_CAPT]:
             
@@ -87,7 +89,7 @@ def calculateActionSuccessProbability(player, action, game):
     elif action == ACTION_ASS:
         #Probability that a player is not contessa - and that will be when assassination is successful
 
-        remainingContessa = 5 - removedCards[CARD_CONT]
+        remainingContessa = STARTING_CARDS_NUM - removedCards[CARD_CONT]
 
         probability = remainingContessa/remainingCardsNum
 
@@ -98,7 +100,7 @@ def calculateActionSuccessProbability(player, action, game):
         return 1
     elif action == ACTION_EXC:
         #Probability that a player has ambassador
-        remainingAmbassador = 5 - removedCards[CARD_AMBR]
+        remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
 
         probability = remainingAmbassador/remainingCardsNum
         return probability
@@ -116,7 +118,7 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
     elif action == ACTION_FOR:
         #Duke Probability - Dukes don't lose anything from not blocking, so they should block
 
-        remainingDukes = 5-removedCards[CARD_DUKE]
+        remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
         if playerRoles == GAMECARDS[CARD_DUKE]:
             #One less Duke in Deck
@@ -132,7 +134,7 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
 
         #Duke Probability - Duke can get tax - 3 coins
 
-        remainingDukes = 5-removedCards[CARD_DUKE]
+        remainingDukes = STARTING_CARDS_NUM-removedCards[CARD_DUKE]
 
         if playerRoles == GAMECARDS[CARD_DUKE]:
             probability = 1
@@ -145,8 +147,8 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
 
         #Probability that player is a captain and another captain and ambassador doesn't block it
 
-        remainingCaptains = 5 - removedCards[CARD_CAPT]
-        remainingAmbassador = 5 - removedCards[CARD_AMBR]
+        remainingCaptains = STARTING_CARDS_NUM - removedCards[CARD_CAPT]
+        remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
 
         if playerRoles == GAMECARDS[CARD_CAPT]:
             
@@ -161,7 +163,7 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
     elif action == ACTION_ASS:
         #Probability that a player is not contessa - and that will be when assassination is successful
 
-        remainingContessa = 5 - removedCards[CARD_CONT]
+        remainingContessa = STARTING_CARDS_NUM - removedCards[CARD_CONT]
 
         probability = remainingContessa/remainingCardsNum
 
@@ -172,7 +174,7 @@ def calculateShortTermActionSuccessProbability(player, action, actions, game):
         return 1
     elif action == ACTION_EXC:
         #Probability that a player has ambassador
-        remainingAmbassador = 5 - removedCards[CARD_AMBR]
+        remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
 
         probability = remainingAmbassador/remainingCardsNum
         return probability
