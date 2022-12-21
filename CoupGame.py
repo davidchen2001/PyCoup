@@ -3,7 +3,7 @@ from CoupDeck import *
 from CoupPlayer import CoupPlayer
 from CoupHistory import *
 import math
-from CoupStrategy import successfulUtilityFunction, calculateActionSuccessProbability
+from CoupStrategy import utilityGainFunction, calculateActionSuccessProbability
 
 class CoupGame:
     ''' 
@@ -409,7 +409,7 @@ class CoupGame:
             #Truthful
             
             #If challenge happens - you get 1 utility because other player will die
-            utility = successfulUtilityFunction(action)
+            utility = utilityGainFunction(action)
             expectedUtility = utility + 1 * (1-calculateActionSuccessProbability(player,action,self))
             outcomes[action] = expectedUtility
 
@@ -418,7 +418,7 @@ class CoupGame:
             #Non-truthful
 
             #If challenge does not happen, I get utility of the action, unless assassination gets blocked (0 utility)
-            utility = successfulUtilityFunction(action)
+            utility = utilityGainFunction(action)
 
             probability = calculateActionSuccessProbability(player, action, self)
 
@@ -431,7 +431,7 @@ class CoupGame:
             #Non-truthful
 
             #If challenge does not happen, I get utility of the action
-            utility = successfulUtilityFunction(action)
+            utility = utilityGainFunction(action)
 
             probability = calculateActionSuccessProbability(player, action, self)
 
@@ -444,7 +444,7 @@ class CoupGame:
             #Non-truthful
 
             #If challenge does not happen, I get utility of the action
-            utility = successfulUtilityFunction(action)
+            utility = utilityGainFunction(action)
 
             probability = calculateActionSuccessProbability(player, action, self)
 
@@ -455,7 +455,7 @@ class CoupGame:
         elif action == ACTION_TAX:
 
             #If challenge does not happen, I get utility of the action
-            utility = successfulUtilityFunction(action)
+            utility = utilityGainFunction(action)
 
             probability = calculateActionSuccessProbability(player, action, self)
 
@@ -468,7 +468,7 @@ class CoupGame:
             #I can't be challenged for this
 
             #If challenge does not happen, I get utility of the action
-            utility = successfulUtilityFunction(action)
+            utility = utilityGainFunction(action)
 
             probability = calculateActionSuccessProbability(player, action, self)
             expectedUtility = utility * probability
@@ -477,7 +477,7 @@ class CoupGame:
         elif action == ACTION_FOR:
 
             #If challenge does not happen, I get utility of the action
-            utility = successfulUtilityFunction(action)
+            utility = utilityGainFunction(action)
 
             probability = calculateActionSuccessProbability(player, action, self)
 

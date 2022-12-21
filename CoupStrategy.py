@@ -186,7 +186,7 @@ def shortTermStrategy(player, actions, game):
 
     for i in range(len(actions)):
         probability = calculateShortTermActionSuccessProbability(player, actions[i], actions, game)
-        utility = successfulUtilityFunction(actions[i])
+        utility = utilityGainFunction(actions[i])
 
         utility *= probability
 
@@ -210,15 +210,44 @@ def shortTermTruthfulStrategy(player, game):
     actions = player.getTruthfulActions()
     return shortTermStrategy(player, actions, game)
 
-def successfulUtilityFunction(action):
-    utility = 1
+def utilityGainFunction(action):
+    #Assuming action was successful
 
-    if action == ACTION_INC:
-        utility = 1/10
-    elif action == ACTION_FOR or action == ACTION_STL:
-        utility = 2/10
+    utility = 0
+    killUtility = 100
+
+    if action == ACTION_ASS:
+        utility = killUtility - 3
+    
+    elif action == ACTION_COU:
+        utility = killUtility - 7
+    
+    elif action == ACTION_STL:
+        utility += 2
+    
     elif action == ACTION_TAX:
-        utility = 3/10
+        utility += 3
+
+    elif action == ACTION_INC:
+        utility += 1
     
+    elif action == ACTION_FOR:
+        utility += 2
+
+    else:
+        #Exchange
+        utility = 0
     return utility
+
+def utilityLossFunction(action):
     
+    utility = 0
+    deathUtility = -100
+
+    if action == ACTION_COU or action == ACTION_ASS:
+        utility = deathUtility
+
+    elif action == ACTION_STL:
+        utility -= 2
+
+
