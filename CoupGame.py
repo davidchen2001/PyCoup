@@ -58,7 +58,9 @@ class CoupGame:
         for i in range(self.playerCount):
             self.alive[i].cards[0] = self.deck.draw()
             self.alive[i].numCards += 1
-            if (not endgame):
+            if endgame:
+                self.alive[1].cards[1] = -2
+            else:
                 self.alive[i].cards[1] = self.deck.draw()
                 self.alive[i].numCards += 1
 
@@ -405,7 +407,14 @@ class CoupGame:
     
     def getCardsRemoved(self):
         return self.cardsRemoved
-    
+
+    def getNumOpponentsCards(self, player):
+        cards = 0
+        for opponent in self.alive:
+            if (opponent != player):
+                cards += len(opponent.getCards())
+        return cards
+
     def generatePossibleOutcomes(self, player, action, actions):
         outcomes = {}
         

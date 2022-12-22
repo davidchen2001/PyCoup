@@ -4,6 +4,7 @@ import itertools
 import random
 from datetime import datetime
 
+from Agents.AutomatedAgent import *
 from Agents.BluffingLongVisionAgent import *
 from Agents.BluffingShortVisionAgent import *
 from Agents.TruthfulLongVisionAgent import *
@@ -32,10 +33,10 @@ class CoupTournament:
     # if repeat > 1 then there can be more than 1 of the same player type in one game
     def createPlayers(self, repeat:int = 1):
         for i in range(repeat):
-            self.addPlayer(CoupPlayer("Strat 1-" + str(i)))
-            self.addPlayer(CoupPlayer("Strat 2-" + str(i)))
-            self.addPlayer(CoupPlayer("Strat 3-" + str(i)))
-            self.addPlayer(CoupPlayer("Strat 4-" + str(i)))
+            self.addPlayer(TruthfulShortVisionAgent())
+            self.addPlayer(BluffingShortVisionAgent())
+            self.addPlayer(TruthfulLongVisionAgent())
+            self.addPlayer(BluffingLongVisionAgent())
 
     # returns a list of games with length > minGames, where every player plays equal amounts
     # if uniqueGames = False, then players can play against themselves

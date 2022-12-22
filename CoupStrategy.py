@@ -20,7 +20,7 @@ def longTermStrategy(player, actions, game):
         #Find each outcome that could come from each action
         #Find utility of each outcome
         #Find probability of each outcome happening
-        outcomes = game.generatePossibleOutcomes(player, actions[i], game)
+        outcomes = game.generatePossibleOutcomes(player, actions[i], actions)
 
         utilityMap[actions[i]] = outcomes[actions[i]]
         if maxUtility < outcomes[actions[i]]:
@@ -303,32 +303,34 @@ def calculateBlockUtility(player, action, game):
     successUtility = 0
     failUtility = 0
 
-    card = player.getCards()[0]
+    myCard = player.getCards()[0]
+    blockers = {
+        ACTION_ASS: CARD_CONT,
+        ACTION_FOR: CARD_DUKE,
+        ACTION_STL: [CARD_AMBR, CARD_CAPT]
+    }
 
     if action == ACTION_ASS:
-
-        if card != CARD_CONT:
+        if myCard != CARD_CONT:
             failUtility = -100
             successUtility = 1
         else:
+            successUtility = 100
             failUtility = 0
 
     elif action == ACTION_FOR:
-
         successUtility = 2
 
-        if card != CARD_DUKE:
+        if myCard != CARD_DUKE:
             failUtility = -100
 
         else: 
             failUtility = 0
 
     elif action == ACTION_STL:
-
         successUtility = 3
 
-        if card == CARD_CAPT or card == CARD_AMBR:
-
+        if myCard == CARD_CAPT or myCard == CARD_AMBR:
 
             failUtility = 0
         else:
@@ -340,73 +342,44 @@ def calculateBlockUtility(player, action, game):
     failUtility = -100
 
     expectedSuccess = successUtility * probability
-    expectedFail = failUtility * (1-probability)
-
+    expectedFail = (-1*failUtility) * (1-probability)
+    print(player.name, "Block expectation of success and fail", round(expectedSuccess, 3), round(expectedFail))
     if expectedSuccess > expectedFail and expectedSuccess > 0:
-        return ACTION_BLO
+        if action == ACTION_STL:
+            return player.getStealBlockCard()
+        else:
+            return blockers[action]
     else:
-        return ACTION_INC
+        # do not block
+        return -1
 
-def calculateChallengeSuccess(opponent, challenger, action, game):
-
-    #What is the probability the opponent's action will be successful?
-    initialProbability =  calculateActionSuccessProbability(opponent, action, game)
-    probability = 1-initialProbability
+def calculateChallengeSuccess(challenger, card, game):
 
     remainingCardsNum = game.getNumCardsRemaining()
     removedCards = game.getCardsRemoved()
 
     challengerCards = challenger.getCards()
-    card = challengerCards[0]
+    removedCards[challengerCards[0]] -= 1
+    if (challengerCards[1] >= 0):
+        removedCards[challengerCards[1]] -= 1
 
-    if action == ACTION_ASS and card == CARD_ASSN:
-        probability = (STARTING_CARDS_NUM - removedCards[CARD_ASSN]-1)/remainingCardsNum
-    elif action == ACTION_EXC and card == CARD_AMBR:
-        probability = (STARTING_CARDS_NUM - removedCards[CARD_AMBR]-1)/remainingCardsNum
-    elif action == ACTION_STL and card == CARD_CAPT:
-        probability = (STARTING_CARDS_NUM - removedCards[CARD_CAPT]-1)/remainingCardsNum
-    elif action == ACTION_TAX and card == CARD_DUKE:
-        probability = (STARTING_CARDS_NUM - removedCards[CARD_DUKE]-1)/remainingCardsNum
-    elif action == ACTION_BLO and card == CARD_CONT or card == CARD_DUKE or card == CARD_CAPT or card == CARD_AMBR:
+    truthProbability = (STARTING_CARDS_NUM - removedCards[card])/remainingCardsNum
     
+    return 1-truthProbability
 
-        #Block Foreign Aid
-        if card == CARD_DUKE:
-            #What are the odds the player is not Duke and if I know I am Duke?
+def calculateChallengeUtility(challenger, card, game):
 
-            remainingDukes = STARTING_CARDS_NUM - removedCards[CARD_DUKE] - 1
-            probability = remainingDukes/remainingCardsNum
-
-        #Block Assassination
-        elif card == CARD_CONT:
-            #What are the odds the player is not Contessa and if I know I am Contessa?
-
-            remainingContessa = STARTING_CARDS_NUM - removedCards[CARD_CONT] - 1
-            probability = remainingContessa/remainingCardsNum
-
-        #Block Stealing
-        elif card == CARD_CAPT or card == CARD_AMBR:
-            #What are the odds the player is not Ambassador or Captain if I know I am one of these roles?
-
-            remainingCaptains = STARTING_CARDS_NUM - removedCards[CARD_CAPT]
-            remainingAmbassador = STARTING_CARDS_NUM - removedCards[CARD_AMBR]
-
-            
-            probability = (remainingCaptains + remainingAmbassador - 1)/remainingCardsNum
-
-    return probability
-
-def calculateChallengeUtility(opponent, challenger, action, game):
-
-    successUtility = 100
+    # the less cards are left in the game, the greater reward for success challenge
+    successUtility = 100 / game.getNumOpponentsCards(challenger)
     failUtility = -100
 
-    probability = calculateChallengeSuccess(opponent, challenger, action, game)
+    probability = calculateChallengeSuccess(challenger, card, game)
 
     expectedSuccess = successUtility * probability
-    expectedFail = failUtility * (1-probability)
+    expectedFail = (-1*failUtility) * (1-probability)
+    print(challenger.name, "Challenge expectation of success and fail", round(expectedSuccess, 3), round(expectedFail))
 
     if expectedSuccess > expectedFail and expectedSuccess > 0:
-        return ACTION_CHA
+        return True
     else:
-        return ACTION_INC
+        return False

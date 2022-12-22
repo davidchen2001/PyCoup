@@ -158,16 +158,16 @@ class CoupPlayer(object):
             except:
                 print("------- Invalid action input received.")
 
-    # for actions with a target, return player # to target
+    # for actions with a target, return player ID to target
     def getTarget(self, possibleTargets) -> int:
         #how will we ensure player knows game state?
         
         while(True):
             user_input = input("--- Who would you like to target? ")
             try:
-                player_index = int(user_input)
-                assert player_index in possibleTargets
-                return player_index
+                player_id = int(user_input)
+                assert player_id in possibleTargets
+                return player_id
             except:
                 print("------- Invalid target input received.")
 
@@ -256,8 +256,6 @@ class CoupPlayer(object):
                 print("------- Invalid input received.")
         return chosenCards
 
-    def automatedExchange(self, possibleCards):
-        pass
 
 if __name__ == "__main__":
     player1 = CoupPlayer("Player 1");
