@@ -11,7 +11,9 @@ from Agents.TruthfulLongVisionAgent import *
 from Agents.TruthfulShortVisionAgent import *
 
 UTILITY = [8,4,2,1]
-FILE_CSV = "./Results/" + datetime.now().strftime("%b%d_%H%M") + ".csv"
+STR_TIME = datetime.now().strftime("%b%d_%H%M")
+FILE_CSV = "./Results/" + STR_TIME + ".csv"
+FILE_TXT = "./Results/" + STR_TIME + "_utilities.txt"
 PLAYERS_PER_GAME = 4
 
 
@@ -94,9 +96,12 @@ class CoupTournament:
             self.playRound()
             self.gamesPlayed += 1
 
-        print("Utilities:", self.utils)
+        f = open(FILE_TXT, "w")
         for id in self.players:
-            print(str(id) + ": " + self.players[id].name)
+            output = str(id) + ": " + self.players[id].name + ", " + str(self.utils[id])
+            print(output)
+            f.write(output + "\n")
+        f.close()
 
     def playRound(self):
         current_matchup_ids = self.schedule[self.gamesPlayed]

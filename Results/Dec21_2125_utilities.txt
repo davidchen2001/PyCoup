@@ -1,0 +1,4 @@
+100: Truthful-Short, 573
+101: Bluffing-Short, 352
+102: Truthful-Long, 652
+103: Bluffing-Long, 223
