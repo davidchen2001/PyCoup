@@ -195,7 +195,9 @@ class CoupGame:
         toChoose.append(self.deck.draw())
         newHand = player.exchange(toChoose)
         assert (len(newHand) == handSize)
-        
+        if(handSize == 1):
+            newHand.append(-2)
+            
         if(len(toChoose) > 2):
             # if toChoose was not altered in the player's exchange
             # must remove player's chosen cards from toChoose
@@ -207,6 +209,7 @@ class CoupGame:
 
         assert len(toChoose) == 2
         self.deck.add(toChoose[0], toChoose[1])
+        
         player.cards = newHand
 
         # player mentioned so that x assassinated y could be displayed

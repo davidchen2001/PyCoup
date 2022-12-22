@@ -82,8 +82,8 @@ class CoupTournament:
         assert (leastPlayed + int(minGames * scheduleLeeway) >= mostPlayed)
 
         # COMMENT THIS OUT
-        print("***Trimming schedule to 2 games for debugging :)")
-        schedule = schedule[:2]
+        #print("***Trimming schedule to 2 games for debugging :)")
+        #schedule = schedule[:2]
 
         self.schedule = schedule
 

@@ -207,7 +207,7 @@ def shortTermNonTruthfulStrategy(player, game):
     return shortTermStrategy(player, actions, game)
 
 def shortTermTruthfulStrategy(player, game):
-    actions = player.getTruthfulActions()
+    actions = player.getPossibleTruthfulActions()
     return shortTermStrategy(player, actions, game)
 
 def utilityGainFunction(action):

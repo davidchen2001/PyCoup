@@ -135,7 +135,7 @@ class CoupPlayer(object):
         if (ACTION_TAX in actions) and (CARD_DUKE not in self.cards):
             actions.remove(ACTION_TAX)
 
-        return actions.sort()
+        return actions
 
     def getAction(self, possibleActions) -> int:
         #how will we ensure player knows game state?
